@@ -5,7 +5,8 @@ module.exports = {
     app: ["babel-polyfill", "./src/index.js"]
   },
   output: {
-    filename: "bundle.js"
+    filename: "bundle.js",
+    pathh: path.resolve(__dirname, "static")
   },
   context: __dirname,
   node: {
