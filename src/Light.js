@@ -1,17 +1,17 @@
 import Vector from "./Vector";
 
-var light = new Vector([0.4, 0.5, -0.6]);
-
 // constants for the shaders
 const bounces = "5";
 const lightSize = 0.1;
 const lightVal = 0.5;
 const epsilon = "0.0001";
 const infinity = "10000.0";
+let light = new Vector([0.4, 0.5, -0.6]);
 
 export default class Light {
-  constructor() {
-    this.temporaryTranslation = new Vector([0, 0, 0]);
+  constructor(state) {
+    this.state = state;
+    this.state.temporaryTranslation = new Vector([0, 0, 0]);
   }
 
   getGlobalCode() {
@@ -34,8 +34,8 @@ export default class Light {
     return "";
   }
 
-  setUniforms(renderer) {
-    renderer.uniforms.light = light.add(this.temporaryTranslation);
+  setUniforms(state) {
+    state.uniforms.light = light.add(this.state.temporaryTranslation);
   }
 
   clampPosition(position) {
@@ -50,23 +50,23 @@ export default class Light {
   temporaryTranslate(translation) {
     var tempLight = light.add(translation);
     Light.clampPosition(tempLight);
-    this.temporaryTranslation = tempLight.subtract(light);
+    this.state.temporaryTranslation = tempLight.subtract(light);
   }
 
   translate(translation) {
-    light = light.add(translation);
-    Light.clampPosition(light);
+    var tempLight = light.add(translation);
+    Light.clampPosition(tempLight);
   }
 
   getMinCorner() {
     return light
-      .add(this.temporaryTranslation)
+      .add(this.state.temporaryTranslation)
       .subtract(new Vector([lightSize, lightSize, lightSize]));
   }
 
   getMaxCorner() {
     return light
-      .add(this.temporaryTranslation)
+      .add(this.state.temporaryTranslation)
       .add(new Vector([lightSize, lightSize, lightSize]));
   }
 
