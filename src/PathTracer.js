@@ -86,8 +86,7 @@ export default class PathTracer {
     // create render shader
     this.state.renderProgram = this.state.renderer.compileShader(
       renderVertexSource,
-      renderFragmentSource,
-      this.state.gl
+      renderFragmentSource
     );
     this.state.renderVertexAttribute = this.state.gl.getAttribLocation(
       this.state.renderProgram,

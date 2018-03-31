@@ -335,6 +335,7 @@ function makeStacks() {
     )
   );
 
+  // state.ui.setObjects(objects);
   return objects;
 }
 
@@ -447,6 +448,7 @@ function makeTableAndChair() {
     new Sphere(new Vector([-0.1, -0.05, 0]), 0.25, state.nextObjectId++)
   );
 
+  // state.ui.setObjects(objects);
   return objects;
 }
 
@@ -463,6 +465,7 @@ function makeSphereAndCube() {
   objects.push(
     new Sphere(new Vector([0, -0.75, 0]), 0.25, state.nextObjectId++)
   );
+  // state.ui.setObjects(objects);
   return objects;
 }
 
@@ -480,6 +483,7 @@ function makeSphereColumn() {
   objects.push(
     new Sphere(new Vector([0, -0.75, 0]), 0.25, state.nextObjectId++)
   );
+  // state.ui.setObjects(objects);
   return objects;
 }
 
@@ -510,6 +514,7 @@ function makeCubeAndSpheres() {
   objects.push(
     new Sphere(new Vector([0, 0, +0.25]), 0.25, state.nextObjectId++)
   );
+  // state.ui.setObjects(objects);
   return objects;
 }
 
@@ -595,6 +600,7 @@ function makeSpherePyramid() {
     )
   );
 
+  // state.ui.setObjects(objects);
   return objects;
 }
 
@@ -664,6 +670,7 @@ function addRecursiveSpheresBranch(objects, center, radius, depth, dir) {
 function makeRecursiveSpheres() {
   var objects = [];
   addRecursiveSpheresBranch(objects, new Vector([0, 0, 0]), 0.3, 2, -1);
+  // state.ui.setObjects(objects);
   return objects;
 }
 
@@ -744,6 +751,7 @@ window.onload = function() {
   }
 
   document.onmousedown = function(event) {
+    console.log("mousedown", event);
     var mouse = canvasMousePos(event);
     state.oldX = mouse.x;
     state.oldY = mouse.y;
@@ -801,26 +809,14 @@ window.onload = function() {
     }
   };
 
-  document.getElementById("selectLightButton").onclick = state.ui.selectLight();
-  document.getElementById("addSphereButton").onclick = state.ui.addSphere();
-  document.getElementById("addCubeButton").onclick = state.ui.addCube();
+  document.getElementById("makeSphereColumn").onclick = e => state.ui.setObjects(makeSphereColumn());
+  document.getElementById("makeSpherePyramid").onclick = e => state.ui.setObjects(makeSpherePyramid());
+  document.getElementById("makeSphereAndCube").onclick = e => state.ui.setObjects(makeSphereAndCube());
+  document.getElementById("makeCubeAndSpheres").onclick = e => state.ui.setObjects(makeCubeAndSpheres());
+  document.getElementById("makeTableAndChair").onclick = e =>state.ui.setObjects(makeTableAndChair());
+  document.getElementById("makeStacks").onclick = e => state.ui.setObjects(makeStacks());
 
-  document.getElementById("makeSphereColumn").onclick = state.ui.setObjects(
-    makeSphereColumn()
-  );
-  document.getElementById("makeSpherePyramid").onclick = state.ui.setObjects(
-    makeSpherePyramid()
-  );
-  document.getElementById("makeSphereAndCube").onclick = state.ui.setObjects(
-    makeSphereAndCube()
-  );
-  document.getElementById("makeCubeAndSpheres").onclick = state.ui.setObjects(
-    makeCubeAndSpheres()
-  );
-  document.getElementById("makeTableAndChair").onclick = state.ui.setObjects(
-    makeTableAndChair()
-  );
-  document.getElementById("makeStacks").onclick = state.ui.setObjects(
-    makeStacks()
-  );
+  document.getElementById("selectLightButton").onclick = e => state.ui.selectLight();
+  document.getElementById("addSphereButton").onclick = e => state.ui.addSphere();
+  document.getElementById("addCubeButton").onclick = e => state.ui.addCube();
 };

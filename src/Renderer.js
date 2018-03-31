@@ -29,6 +29,7 @@ export default class Renderer {
   constructor(state) {
     this.state = state;
     state.renderer = this;
+    const gl = state.gl;
 
     const vertices = [
       0,
@@ -84,40 +85,39 @@ export default class Renderer {
     ];
 
     // create vertex buffer
-    this.state.vertexBuffer = this.state.gl.createBuffer();
-    this.state.gl.bindBuffer(
-      this.state.gl.ARRAY_BUFFER,
-      this.state.vertexBuffer
+    this.vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(
+      gl.ARRAY_BUFFER,
+      this.vertexBuffer
     );
-    this.state.gl.bufferData(
-      this.state.gl.ARRAY_BUFFER,
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
       new Float32Array(vertices),
-      this.state.gl.STATIC_DRAW
+      gl.STATIC_DRAW
     );
 
     // create index buffer
-    this.state.indexBuffer = this.state.gl.createBuffer();
-    this.state.gl.bindBuffer(
-      this.state.gl.ELEMENT_ARRAY_BUFFER,
-      this.state.indexBuffer
+    this.indexBuffer = gl.createBuffer();
+    gl.bindBuffer(
+      gl.ELEMENT_ARRAY_BUFFER,
+      this.indexBuffer
     );
-    this.state.gl.bufferData(
-      this.state.gl.ELEMENT_ARRAY_BUFFER,
+    gl.bufferData(
+      gl.ELEMENT_ARRAY_BUFFER,
       new Uint16Array(indices),
-      this.state.gl.STATIC_DRAW
+      gl.STATIC_DRAW
     );
 
     // create line shader
-    this.state.lineProgram = this.compileShader(
+    this.lineProgram = this.compileShader(
       lineVertexSource,
-      lineFragmentSource,
-      this.state.gl
+      lineFragmentSource
     );
-    this.state.vertexAttribute = this.state.gl.getAttribLocation(
-      this.state.lineProgram,
+    this.vertexAttribute = gl.getAttribLocation(
+      this.lineProgram,
       "vertex"
     );
-    this.state.gl.enableVertexAttribArray(this.state.vertexAttribute);
+    gl.enableVertexAttribArray(this.vertexAttribute);
 
     this.state.objects = [];
     this.state.selectedObject = null;
@@ -161,6 +161,7 @@ export default class Renderer {
 
   compileSource(source, type) {
     var shader = this.state.gl.createShader(type);
+    console.log("compileSource", type, source);
     this.state.gl.shaderSource(shader, source);
     this.state.gl.compileShader(shader);
     if (
@@ -217,36 +218,27 @@ export default class Renderer {
   render() {
     this.state.pathTracer.render();
 
+    let gl = this.state.gl;
+
     if (this.state.selectedObject != null) {
-      this.state.gl.useProgram(this.state.lineProgram);
-      this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, null);
-      this.state.gl.bindBuffer(
-        this.state.gl.ARRAY_BUFFER,
-        this.state.vertexBuffer
-      );
-      this.state.gl.bindBuffer(
-        this.state.gl.ELEMENT_ARRAY_BUFFER,
-        this.state.indexBuffer
-      );
-      this.state.gl.vertexAttribPointer(
-        this.state.vertexAttribute,
+      gl.useProgram(this.lineProgram);
+      gl.bindTexture(this.state.gl.TEXTURE_2D, null);
+      gl.bindBuffer( gl.ARRAY_BUFFER, this.vertexBuffer );
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer );
+      gl.vertexAttribPointer(
+        this.vertexAttribute,
         3,
-        this.state.gl.FLOAT,
+        gl.FLOAT,
         false,
         0,
         0
       );
-      this.setUniforms(this.state.lineProgram, {
+      this.setUniforms(this.lineProgram, {
         cubeMin: this.state.selectedObject.getMinCorner(),
         cubeMax: this.state.selectedObject.getMaxCorner(),
         modelviewProjection: this.state.modelviewProjection
       });
-      this.state.gl.drawElements(
-        this.state.gl.LINES,
-        24,
-        this.state.gl.UNSIGNED_SHORT,
-        0
-      );
+      gl.drawElements(gl.LINES, 24, gl.UNSIGNED_SHORT, 0);
     }
   }
 }
