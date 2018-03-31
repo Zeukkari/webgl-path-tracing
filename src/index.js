@@ -80,7 +80,20 @@ const state = {
   oldY: 0,
   mouseDown: false,
   gl: undefined,
-  material: undefined
+  material: undefined,
+  objects: [],
+  uniforms: [],
+  renderer: undefined,
+  projection: undefined,
+  modelview: undefined,
+  modelviewProjection: undefined,
+  vertexBuffer: undefined,
+  vertexAttribute: undefined,
+  indexBuffer: undefined,
+  lineProgram: undefined,
+  selectedObject: null,
+  pathTracer: null,
+  sampleCount: 0
 };
 
 window.state = state;
@@ -758,7 +771,7 @@ window.onload = function() {
       state.angleX = Math.min(state.angleX, Math.PI / 2 - 0.01);
 
       // clear the sample buffer
-      state.renderer.pathTracer.sampleCount = 0;
+      state.sampleCount = 0;
 
       // remember this coordinate
       state.oldX = mouse.x;

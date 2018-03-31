@@ -89,9 +89,9 @@ export default class Cube {
     );
   }
 
-  setUniforms(renderer) {
-    renderer.uniforms[this.minStr] = this.getMinCorner();
-    renderer.uniforms[this.maxStr] = this.getMaxCorner();
+  setUniforms(state) {
+    state.uniforms[this.minStr] = this.getMinCorner();
+    state.uniforms[this.maxStr] = this.getMaxCorner();
   }
 
   temporaryTranslate(translation) {

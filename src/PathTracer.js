@@ -43,16 +43,19 @@ export default class PathTracer {
     );
 
     // create framebuffer
-    this.framebuffer = this.state.gl.createFramebuffer();
+    this.state.framebuffer = this.state.gl.createFramebuffer();
 
     // create textures
     var type = this.state.gl.getExtension("OES_texture_float")
       ? this.state.gl.FLOAT
       : this.state.gl.UNSIGNED_BYTE;
-    this.textures = [];
+    this.state.textures = [];
     for (var i = 0; i < 2; i++) {
-      this.textures.push(this.state.gl.createTexture());
-      this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, this.textures[i]);
+      this.state.textures.push(this.state.gl.createTexture());
+      this.state.gl.bindTexture(
+        this.state.gl.TEXTURE_2D,
+        this.state.textures[i]
+      );
       this.state.gl.texParameteri(
         this.state.gl.TEXTURE_2D,
         this.state.gl.TEXTURE_MAG_FILTER,
@@ -78,80 +81,107 @@ export default class PathTracer {
     this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, null);
 
     // create render shader
-    this.renderProgram = this.state.renderer.compileShader(
+    this.state.renderProgram = this.state.renderer.compileShader(
       renderVertexSource,
       renderFragmentSource,
       this.state.gl
     );
-    this.renderVertexAttribute = this.state.gl.getAttribLocation(
-      this.renderProgram,
+    this.state.renderVertexAttribute = this.state.gl.getAttribLocation(
+      this.state.renderProgram,
       "vertex"
     );
-    this.state.gl.enableVertexAttribArray(this.renderVertexAttribute);
+    this.state.gl.enableVertexAttribArray(this.state.renderVertexAttribute);
 
     // objects and shader will be filled in when setObjects() is called
-    this.objects = [];
-    this.sampleCount = 0;
-    this.tracerProgram = null;
+    this.state.objects = [];
+    this.state.sampleCount = 0;
+    this.state.tracerProgram = null;
   }
 
   setObjects(objects) {
-    this.uniforms = {};
-    this.sampleCount = 0;
-    this.objects = objects;
+    this.state.uniforms = {};
+    this.state.sampleCount = 0;
+    this.state.objects = objects;
 
     // create tracer shader
-    if (this.tracerProgram != null) {
+    if (this.state.tracerProgram != null) {
       this.state.gl.deleteProgram(this.shaderProgram);
     }
-    this.tracerProgram = this.state.renderer.compileShader(
+    this.state.tracerProgram = this.state.renderer.compileShader(
       tracerVertexSource,
       makeTracerFragmentSource(objects),
       this.state.gl
     );
-    this.tracerVertexAttribute = this.state.gl.getAttribLocation(
-      this.tracerProgram,
+    this.state.tracerVertexAttribute = this.state.gl.getAttribLocation(
+      this.state.tracerProgram,
       "vertex"
     );
-    this.state.gl.enableVertexAttribArray(this.tracerVertexAttribute);
+    this.state.gl.enableVertexAttribArray(this.state.tracerVertexAttribute);
   }
 
   update(matrix, timeSinceStart) {
     if (!matrix) return;
 
     // calculate uniforms
-    for (var i = 0; i < this.objects.length; i++) {
-      this.objects[i].setUniforms(this);
+    for (var i = 0; i < this.state.objects.length; i++) {
+      this.state.objects[i].setUniforms(this.state);
     }
-    this.uniforms.eye = this.state.eye;
-    this.uniforms.glossiness = this.state.glossiness;
+    this.state.uniforms.eye = this.state.eye;
+    this.state.uniforms.glossiness = this.state.glossiness;
 
-    this.uniforms.ray00 = Renderer.getEyeRay(matrix, -1, -1, this.state.eye);
-    this.uniforms.ray01 = Renderer.getEyeRay(matrix, -1, +1, this.state.eye);
-    this.uniforms.ray10 = Renderer.getEyeRay(matrix, +1, -1, this.state.eye);
-    this.uniforms.ray11 = Renderer.getEyeRay(matrix, +1, +1, this.state.eye);
+    this.state.uniforms.ray00 = Renderer.getEyeRay(
+      matrix,
+      -1,
+      -1,
+      this.state.eye
+    );
+    this.state.uniforms.ray01 = Renderer.getEyeRay(
+      matrix,
+      -1,
+      +1,
+      this.state.eye
+    );
+    this.state.uniforms.ray10 = Renderer.getEyeRay(
+      matrix,
+      +1,
+      -1,
+      this.state.eye
+    );
+    this.state.uniforms.ray11 = Renderer.getEyeRay(
+      matrix,
+      +1,
+      +1,
+      this.state.eye
+    );
 
-    this.uniforms.timeSinceStart = timeSinceStart;
-    this.uniforms.textureWeight = this.sampleCount / (this.sampleCount + 1);
+    this.state.uniforms.timeSinceStart = timeSinceStart;
+    this.state.uniforms.textureWeight =
+      this.state.sampleCount / (this.state.sampleCount + 1);
 
     // set uniforms
-    this.state.gl.useProgram(this.tracerProgram);
-    this.state.renderer.setUniforms(this.tracerProgram, this.uniforms);
+    this.state.gl.useProgram(this.state.tracerProgram);
+    this.state.renderer.setUniforms(
+      this.state.tracerProgram,
+      this.state.uniforms
+    );
 
     // render to texture
-    this.state.gl.useProgram(this.tracerProgram);
-    this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, this.textures[0]);
+    this.state.gl.useProgram(this.state.tracerProgram);
+    this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, this.state.textures[0]);
     this.state.gl.bindBuffer(this.state.gl.ARRAY_BUFFER, this.vertexBuffer);
-    this.state.gl.bindFramebuffer(this.state.gl.FRAMEBUFFER, this.framebuffer);
+    this.state.gl.bindFramebuffer(
+      this.state.gl.FRAMEBUFFER,
+      this.state.framebuffer
+    );
     this.state.gl.framebufferTexture2D(
       this.state.gl.FRAMEBUFFER,
       this.state.gl.COLOR_ATTACHMENT0,
       this.state.gl.TEXTURE_2D,
-      this.textures[1],
+      this.state.textures[1],
       0
     );
     this.state.gl.vertexAttribPointer(
-      this.tracerVertexAttribute,
+      this.state.tracerVertexAttribute,
       2,
       this.state.gl.FLOAT,
       false,
@@ -162,16 +192,16 @@ export default class PathTracer {
     this.state.gl.bindFramebuffer(this.state.gl.FRAMEBUFFER, null);
 
     // ping pong textures
-    this.textures.reverse();
-    this.sampleCount++;
+    this.state.textures.reverse();
+    this.state.sampleCount++;
   }
 
   render() {
-    this.state.gl.useProgram(this.renderProgram);
-    this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, this.textures[0]);
+    this.state.gl.useProgram(this.state.renderProgram);
+    this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, this.state.textures[0]);
     this.state.gl.bindBuffer(this.state.gl.ARRAY_BUFFER, this.vertexBuffer);
     this.state.gl.vertexAttribPointer(
-      this.renderVertexAttribute,
+      this.state.renderVertexAttribute,
       2,
       this.state.gl.FLOAT,
       false,

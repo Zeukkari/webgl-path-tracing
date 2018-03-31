@@ -27,9 +27,9 @@ export default class UI {
   }
 
   setObjects(objects) {
-    this.objects = objects;
-    this.objects.splice(0, 0, new Light());
-    this.state.renderer.setObjects(this.objects);
+    this.state.objects = objects;
+    this.state.objects.splice(0, 0, new Light(this.state));
+    this.state.renderer.setObjects(this.state.objects);
   }
 
   update(timeSinceStart) {
@@ -64,10 +64,14 @@ export default class UI {
     );
 
     // test the selection box first
-    if (this.state.renderer.selectedObject != null) {
+    if (
+      this.state.renderer.selectedObject != null &&
+      this.state.renderer.selectedObject.intersectCube !== undefined
+    ) {
       var selectedObject = this.state.renderer.selectedObject;
       var minBounds = selectedObject.getMinCorner();
       var maxBounds = selectedObject.getMaxCorner();
+
       t = selectedObject.intersectCube(origin, ray, minBounds, maxBounds);
 
       if (t < Number.MAX_VALUE) {
@@ -96,11 +100,11 @@ export default class UI {
     t = Number.MAX_VALUE;
     this.state.renderer.selectedObject = null;
 
-    for (var i = 0; i < this.objects.length; i++) {
-      var objectT = this.objects[i].intersect(origin, ray);
+    for (var i = 0; i < this.state.objects.length; i++) {
+      var objectT = this.state.objects[i].intersect(origin, ray);
       if (objectT < t) {
         t = objectT;
-        this.state.renderer.selectedObject = this.objects[i];
+        this.state.renderer.selectedObject = this.state.objects[i];
       }
     }
 
@@ -127,7 +131,7 @@ export default class UI {
       );
 
       // clear the sample buffer
-      this.state.renderer.pathTracer.sampleCount = 0;
+      this.state.sampleCount = 0;
     }
   }
 
@@ -140,7 +144,7 @@ export default class UI {
         this.state.modelviewProjection.inverse(),
         x / 512 * 2 - 1,
         1 - y / 512 * 2,
-        this.state.eye
+        origin
       );
 
       var t =
@@ -162,33 +166,33 @@ export default class UI {
   }
 
   selectLight() {
-    this.state.renderer.selectedObject = this.objects[0];
+    this.state.renderer.selectedObject = this.state.objects[0];
   }
 
   addSphere() {
-    this.objects.push(
+    this.state.objects.push(
       new Sphere(new Vector([0, 0, 0]), 0.25, this.state.nextObjectId++)
     );
-    this.state.renderer.setObjects(this.objects);
+    this.state.renderer.setObjects(this.state.objects);
   }
 
   addCube() {
-    this.objects.push(
+    this.state.objects.push(
       new Cube(
         new Vector([-0.25, -0.25, -0.25]),
         new Vector([0.25, 0.25, 0.25]),
         this.state.nextObjectId++
       )
     );
-    this.state.renderer.setObjects(this.objects);
+    this.state.renderer.setObjects(this.state.objects);
   }
 
   deleteSelection() {
-    for (var i = 0; i < this.objects.length; i++) {
-      if (this.state.renderer.selectedObject == this.objects[i]) {
-        this.objects.splice(i, 1);
+    for (var i = 0; i < this.state.objects.length; i++) {
+      if (this.state.renderer.selectedObject == this.state.objects[i]) {
+        this.state.objects.splice(i, 1);
         this.state.renderer.selectedObject = null;
-        this.state.renderer.setObjects(this.objects);
+        this.state.renderer.setObjects(this.state.objects);
         break;
       }
     }
@@ -196,9 +200,9 @@ export default class UI {
 
   updateMaterial() {
     var newMaterial = parseInt(document.getElementById("material").value, 10);
-    if (this.material != newMaterial) {
-      this.material = newMaterial;
-      this.state.renderer.setObjects(this.objects);
+    if (this.state.material != newMaterial) {
+      this.state.material = newMaterial;
+      this.state.renderer.setObjects(this.state.objects);
     }
   }
 
@@ -209,7 +213,7 @@ export default class UI {
     );
     if (environment != newEnvironment) {
       environment = newEnvironment;
-      this.state.renderer.setObjects(this.objects);
+      this.state.renderer.setObjects(this.state.objects);
     }
   }
 
@@ -218,7 +222,7 @@ export default class UI {
     if (isNaN(newGlossiness)) newGlossiness = 0;
     newGlossiness = Math.max(0, Math.min(1, newGlossiness));
     if (this.material == MATERIAL_GLOSSY && glossiness != newGlossiness) {
-      this.state.renderer.pathTracer.sampleCount = 0;
+      this.state.sampleCount = 0;
     }
     this.glossiness = newGlossiness;
   }

@@ -65,11 +65,9 @@ export default class Sphere {
     );
   }
 
-  setUniforms(renderer) {
-    renderer.uniforms[this.centerStr] = this.center.add(
-      this.temporaryTranslation
-    );
-    renderer.uniforms[this.radiusStr] = this.radius;
+  setUniforms(state) {
+    state.uniforms[this.centerStr] = this.center.add(this.temporaryTranslation);
+    state.uniforms[this.radiusStr] = this.radius;
   }
 
   temporaryTranslate(translation) {

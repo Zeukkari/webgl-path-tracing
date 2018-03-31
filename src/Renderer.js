@@ -84,8 +84,11 @@ export default class Renderer {
     ];
 
     // create vertex buffer
-    this.vertexBuffer = this.state.gl.createBuffer();
-    this.state.gl.bindBuffer(this.state.gl.ARRAY_BUFFER, this.vertexBuffer);
+    this.state.vertexBuffer = this.state.gl.createBuffer();
+    this.state.gl.bindBuffer(
+      this.state.gl.ARRAY_BUFFER,
+      this.state.vertexBuffer
+    );
     this.state.gl.bufferData(
       this.state.gl.ARRAY_BUFFER,
       new Float32Array(vertices),
@@ -93,10 +96,10 @@ export default class Renderer {
     );
 
     // create index buffer
-    this.indexBuffer = this.state.gl.createBuffer();
+    this.state.indexBuffer = this.state.gl.createBuffer();
     this.state.gl.bindBuffer(
       this.state.gl.ELEMENT_ARRAY_BUFFER,
-      this.indexBuffer
+      this.state.indexBuffer
     );
     this.state.gl.bufferData(
       this.state.gl.ELEMENT_ARRAY_BUFFER,
@@ -105,20 +108,20 @@ export default class Renderer {
     );
 
     // create line shader
-    this.lineProgram = this.compileShader(
+    this.state.lineProgram = this.compileShader(
       lineVertexSource,
       lineFragmentSource,
       this.state.gl
     );
-    this.vertexAttribute = this.state.gl.getAttribLocation(
-      this.lineProgram,
+    this.state.vertexAttribute = this.state.gl.getAttribLocation(
+      this.state.lineProgram,
       "vertex"
     );
-    this.state.gl.enableVertexAttribArray(this.vertexAttribute);
+    this.state.gl.enableVertexAttribArray(this.state.vertexAttribute);
 
-    this.objects = [];
-    this.selectedObject = null;
-    this.pathTracer = new PathTracer(state);
+    this.state.objects = [];
+    this.state.selectedObject = null;
+    this.state.pathTracer = new PathTracer(state);
   }
 
   static getEyeRay(matrix, x, y, eye) {
@@ -191,9 +194,9 @@ export default class Renderer {
   }
 
   setObjects(objects) {
-    this.objects = objects;
-    this.selectedObject = null;
-    this.pathTracer.setObjects(objects);
+    this.state.objects = objects;
+    this.state.selectedObject = null;
+    this.state.pathTracer.setObjects(objects);
   }
 
   update(modelviewProjection, timeSinceStart) {
@@ -207,33 +210,36 @@ export default class Renderer {
       )
     );
     const inverse = jitter.multiply(modelviewProjection).inverse();
-    this.modelviewProjection = modelviewProjection;
-    this.pathTracer.update(inverse, timeSinceStart);
+    this.state.modelviewProjection = modelviewProjection;
+    this.state.pathTracer.update(inverse, timeSinceStart);
   }
 
   render() {
-    this.pathTracer.render();
+    this.state.pathTracer.render();
 
-    if (this.selectedObject != null) {
-      this.state.gl.useProgram(this.lineProgram);
+    if (this.state.selectedObject != null) {
+      this.state.gl.useProgram(this.state.lineProgram);
       this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, null);
-      this.state.gl.bindBuffer(this.state.gl.ARRAY_BUFFER, this.vertexBuffer);
+      this.state.gl.bindBuffer(
+        this.state.gl.ARRAY_BUFFER,
+        this.state.vertexBuffer
+      );
       this.state.gl.bindBuffer(
         this.state.gl.ELEMENT_ARRAY_BUFFER,
-        this.indexBuffer
+        this.state.indexBuffer
       );
       this.state.gl.vertexAttribPointer(
-        this.vertexAttribute,
+        this.state.vertexAttribute,
         3,
         this.state.gl.FLOAT,
         false,
         0,
         0
       );
-      this.setUniforms(this.lineProgram, {
-        cubeMin: this.selectedObject.getMinCorner(),
-        cubeMax: this.selectedObject.getMaxCorner(),
-        modelviewProjection: this.modelviewProjection
+      this.setUniforms(this.state.lineProgram, {
+        cubeMin: this.state.selectedObject.getMinCorner(),
+        cubeMax: this.state.selectedObject.getMaxCorner(),
+        modelviewProjection: this.state.modelviewProjection
       });
       this.state.gl.drawElements(
         this.state.gl.LINES,
