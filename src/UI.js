@@ -60,12 +60,15 @@ export default class UI {
       this.state.modelviewProjection.inverse(),
       x / 512 * 2 - 1,
       1 - y / 512 * 2,
-      this.state.eye
+      origin
     );
 
     // test the selection box first
     if (this.state.renderer.selectedObject != null) {
-      t = this.state.renderer.selectedObject.intersect(origin, ray);
+      var selectedObject = this.state.renderer.selectedObject;
+      var minBounds = selectedObject.getMinCorner();
+      var maxBounds = selectedObject.getMaxCorner();
+      t = selectedObject.intersectCube(origin, ray, minBounds, maxBounds);
 
       if (t < Number.MAX_VALUE) {
         var hit = origin.add(ray.multiply(t));

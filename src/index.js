@@ -714,7 +714,10 @@ window.onload = function() {
     }
 
     state.material = parseInt(document.getElementById("material").value, 10);
-    state.environment = parseInt(document.getElementById("environment").value, 10);
+    state.environment = parseInt(
+      document.getElementById("environment").value,
+      10
+    );
     state.ui = new UI(state);
     state.ui.setObjects(makeSphereAndCube());
     var start = new Date();
@@ -755,7 +758,7 @@ window.onload = function() {
       state.angleX = Math.min(state.angleX, Math.PI / 2 - 0.01);
 
       // clear the sample buffer
-      state.ui.renderer.pathTracer.sampleCount = 0;
+      state.renderer.pathTracer.sampleCount = 0;
 
       // remember this coordinate
       state.oldX = mouse.x;
