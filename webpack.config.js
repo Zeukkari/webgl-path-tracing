@@ -1,12 +1,13 @@
 require("babel-polyfill");
+const path = require("path");
 const webpack = require("webpack");
 module.exports = {
   entry: {
-    app: ["babel-polyfill", "./src/index.js"]
+    app: ["babel-polyfill", "./src"]
   },
   output: {
     filename: "bundle.js",
-    pathh: path.resolve(__dirname, "static")
+    path: path.resolve(__dirname, "dist")
   },
   context: __dirname,
   node: {
