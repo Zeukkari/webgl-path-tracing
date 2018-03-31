@@ -1,4 +1,5 @@
 import Vector from "./Vector";
+import config from "./config";
 
 export default class Matrix {
   constructor(elements) {

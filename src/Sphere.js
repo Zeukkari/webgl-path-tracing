@@ -1,5 +1,7 @@
 import Vector from "./Vector";
 import Renderer from "./Renderer";
+import config from "./config";
+
 
 export default class Sphere {
   constructor(center, radius, id) {
@@ -91,7 +93,7 @@ export default class Sphere {
   }
 
   intersect(origin, ray) {
-    return this.intersect2(
+    return this.intersects(
         origin,
       ray,
       this.center.add(this.temporaryTranslation),
@@ -99,7 +101,7 @@ export default class Sphere {
     );
   }
 
-  intersect2(origin, ray, center, radius) {
+  intersects(origin, ray, center, radius) {
     var toSphere = origin.subtract(center);
     var a = ray.dot(ray);
     var b = 2 * toSphere.dot(ray);

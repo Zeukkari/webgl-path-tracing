@@ -1,6 +1,7 @@
 import Vector from "./Vector";
 import Matrix from "./Matrix";
 import Renderer from "./Renderer";
+import config from "./config";
 
 import { makeTracerFragmentSource } from "./index";
 

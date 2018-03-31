@@ -1,3 +1,5 @@
+import config from "./config";
+
 export default class Vector {
   constructor(elements) {
     this.elements = elements;

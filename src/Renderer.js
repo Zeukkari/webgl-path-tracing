@@ -1,6 +1,7 @@
 import Vector from "./Vector";
 import Matrix from "./Matrix";
 import PathTracer from "./PathTracer";
+import config from "./config";
 
 import {
   renderVertexSource,
