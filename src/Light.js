@@ -1,4 +1,5 @@
 import Vector from "./Vector";
+import config from "./config";
 
 // constants for the shaders
 const bounces = "5";

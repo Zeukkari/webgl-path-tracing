@@ -5,6 +5,7 @@ import Sphere from "./Sphere";
 import Renderer from "./Renderer";
 import Light from "./Light";
 import { makeLookAt, makePerspective } from "./glUtils";
+import config from "./config";
 
 const MATERIAL_DIFFUSE = 0;
 const MATERIAL_MIRROR = 1;
@@ -60,8 +61,8 @@ export default class UI {
     var origin = this.state.eye;
     var ray = Renderer.getEyeRay(
       this.state.modelviewProjection.inverse(),
-      x / 512 * 2 - 1,
-      1 - y / 512 * 2,
+      x / config.resolution * 2 - 1,
+      1 - y / config.resolution * 2,
       origin
     );
 
@@ -73,8 +74,8 @@ export default class UI {
       var minBounds = selectedObject.getMinCorner();
       var maxBounds = selectedObject.getMaxCorner();
 
-      if(selectedObject.intersect2) {
-        t = selectedObject.intersect2(origin, ray, minBounds, maxBounds);
+      if(selectedObject.intersect) {
+        t = selectedObject.intersect(origin, ray, minBounds, maxBounds);
       } else {
         t = 0;
       }
@@ -124,8 +125,8 @@ export default class UI {
       var origin = this.state.eye;
       var ray = Renderer.getEyeRay(
         this.state.modelviewProjection.inverse(),
-        x / 512 * 2 - 1,
-        1 - y / 512 * 2,
+        x / config.resolution * 2 - 1,
+        1 - y / config.resolution * 2,
         origin
       );
 
@@ -147,8 +148,8 @@ export default class UI {
       var origin = this.state.eye;
       var ray = Renderer.getEyeRay(
         this.state.modelviewProjection.inverse(),
-        x / 512 * 2 - 1,
-        1 - y / 512 * 2,
+        x / config.resolution * 2 - 1,
+        1 - y / config.resolution * 2,
         origin
       );
 

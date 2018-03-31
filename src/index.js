@@ -36,6 +36,7 @@ import UI from "./UI";
 import Renderer from "./Renderer";
 import PathTracer from "./PathTracer";
 import glUtils from "./glUtils";
+import config from "./config";
 
 import {
   renderVertexSource,
@@ -78,7 +79,7 @@ let glossiness = 0.6;
 
 const state = {
   nextObjectId: 0,
-  eye: new Vector([0, 0, 0]),
+  eye: new Vector([0,0,0]),
   light: new Vector([0.4, 0.5, -0.6]),
   angleX: 0,
   angleY: 0,
@@ -202,7 +203,7 @@ function makeMain() {
     "   vec3 newLight = light + uniformlyRandomVector(timeSinceStart - 53.0) * " +
     lightSize +
     ";" +
-    "   vec3 texture = texture2D(texture, gl_FragCoord.xy / 512.0).rgb;" +
+    "   vec3 texture = texture2D(texture, gl_FragCoord.xy / " + config.resolution +").rgb;" +
     "   gl_FragColor = vec4(mix(calculateColor(eye, initialRay, newLight), texture, textureWeight), 1.0);" +
     " }"
   );
@@ -241,8 +242,9 @@ function tick(timeSinceStart) {
   state.ui.updateMaterial();
   state.ui.updateGlossiness();
   state.ui.updateEnvironment();
-  state.ui.update(timeSinceStart);
+
   state.ui.render();
+  state.ui.update(timeSinceStart);
 }
 
 function makeStacks() {
@@ -713,6 +715,9 @@ window.onload = function() {
   state.gl = null;
   state.error = document.getElementById("error");
   state.canvas = document.getElementById("canvas");
+  // state.canvas.setAttribute("width", config.resolution);
+  // state.canvas.setAttribute("height", config.resolution);
+
   try {
     state.gl = canvas.getContext("experimental-webgl");
   } catch (e) {
@@ -756,7 +761,7 @@ window.onload = function() {
     state.oldX = mouse.x;
     state.oldY = mouse.y;
 
-    if (mouse.x >= 0 && mouse.x < 512 && mouse.y >= 0 && mouse.y < 512) {
+    if (mouse.x >= 0 && mouse.x < config.resolution && mouse.y >= 0 && mouse.y < config.resolution) {
       state.mouseDown = !state.ui.mouseDown(mouse.x, mouse.y);
 
       // disable selection because dragging is used for rotating the camera and moving objects

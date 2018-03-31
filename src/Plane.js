@@ -1,6 +1,7 @@
 import Vector from "./Vector";
 import Matrix from "./Matrix";
 import Line from "./Line";
+import config from "./config";
 
 export default class Plane {
   constructor(anchor, v1, v2) {

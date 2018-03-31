@@ -2,6 +2,7 @@ import Vector from "./Vector";
 import Matrix from "./Matrix";
 import Line from "./Line";
 import Plane from "./Plane";
+import config from "./config";
 
 export const mht = function(m) {
   var s = "";
