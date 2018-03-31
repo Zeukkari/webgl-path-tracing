@@ -9258,8 +9258,8 @@
 	  state.gl = null;
 	  state.error = document.getElementById("error");
 	  state.canvas = document.getElementById("canvas");
-	  // state.canvas.setAttribute("width", config.resolution);
-	  // state.canvas.setAttribute("height", config.resolution);
+	  state.canvas.setAttribute("width", _config2.default.resolution);
+	  state.canvas.setAttribute("height", _config2.default.resolution);
 
 	  try {
 	    state.gl = canvas.getContext("experimental-webgl");
@@ -9961,7 +9961,7 @@
 	  value: true
 	});
 	exports.default = {
-	  resolution: "512.0"
+	  resolution: "2048.0"
 	};
 
 /***/ }),
@@ -11790,7 +11790,7 @@
 	        throw "Error: modelviewProjection missing";
 	        return;
 	      }
-	      var jitter = _Matrix2.default.Translation(new _Vector2.default([Math.random() * 2 - 1, Math.random() * 2 - 1, 0]).multiply(1 / 512));
+	      var jitter = _Matrix2.default.Translation(new _Vector2.default([Math.random() * 2 - 1, Math.random() * 2 - 1, 0]).multiply(1 / _config2.default.resolution));
 	      var inverse = jitter.multiply(modelviewProjection).inverse();
 	      this.state.modelviewProjection = modelviewProjection;
 	      this.state.pathTracer.update(inverse, timeSinceStart);
@@ -11889,7 +11889,7 @@
 	      this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, this.state.textures[i]);
 	      this.state.gl.texParameteri(this.state.gl.TEXTURE_2D, this.state.gl.TEXTURE_MAG_FILTER, this.state.gl.NEAREST);
 	      this.state.gl.texParameteri(this.state.gl.TEXTURE_2D, this.state.gl.TEXTURE_MIN_FILTER, this.state.gl.NEAREST);
-	      this.state.gl.texImage2D(this.state.gl.TEXTURE_2D, 0, this.state.gl.RGB, 512, 512, 0, this.state.gl.RGB, type, null);
+	      this.state.gl.texImage2D(this.state.gl.TEXTURE_2D, 0, this.state.gl.RGB, _config2.default.resolution, _config2.default.resolution, 0, this.state.gl.RGB, type, null);
 	    }
 	    this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, null);
 
