@@ -1,12 +1,9 @@
-var static = require("node-static");
-var file = new static.Server();
+var express = require("express");
+var path = require("path");
+var serveStatic = require("serve-static");
 
-require("http")
-  .createServer(function(request, response) {
-    request
-      .addListener("end", function() {
-        file.serve(request, response);
-      })
-      .resume();
-  })
-  .listen(process.env.PORT || 3000);
+var app = express();
+
+app.use(serveStatic(path.join(__dirname, "dist")));
+// app.use(serveStatic(path.join(__dirname, 'src')))
+app.listen(3000);

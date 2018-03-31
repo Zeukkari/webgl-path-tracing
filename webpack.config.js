@@ -1,6 +1,9 @@
 require("babel-polyfill");
 const path = require("path");
 const webpack = require("webpack");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CleanWebpackPlugin = require('clean-webpack-plugin')
+
 module.exports = {
   entry: {
     app: ["babel-polyfill", "./src"]
@@ -15,12 +18,22 @@ module.exports = {
   },
   module: {
     loaders: [
-      // use ES2015 on this app
       {
         test: /\.jsx?$/,
         exclude: /(node_modules|bower_components)/,
         loader: "babel"
+      },
+      {
+        test: /\.html$/,
+        loader: "html-loader"
       }
     ]
-  }
+  },
+  plugins: [
+    new CleanWebpackPlugin(['dist']),
+    new HtmlWebpackPlugin({
+      filename: "index.html",
+      template: "template.html"
+    })
+  ]
 };

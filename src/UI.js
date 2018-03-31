@@ -27,9 +27,9 @@ export default class UI {
   }
 
   setObjects(objects) {
-    this.state.objects = objects;
-    this.state.objects.splice(0, 0, new Light(this.state));
-    this.state.renderer.setObjects(this.state.objects);
+    //this.state.objects = objects;
+    objects.splice(0, 0, new Light(this.state));
+    this.state.renderer.setObjects(objects);
   }
 
   update(timeSinceStart) {
@@ -53,6 +53,9 @@ export default class UI {
   }
 
   mouseDown(x, y) {
+
+    console.log("mouseDown x,y", x,y)
+
     var t;
     var origin = this.state.eye;
     var ray = Renderer.getEyeRay(
@@ -64,14 +67,18 @@ export default class UI {
 
     // test the selection box first
     if (
-      this.state.renderer.selectedObject != null &&
-      this.state.renderer.selectedObject.intersectCube !== undefined
+      this.state.renderer.selectedObject != null
     ) {
       var selectedObject = this.state.renderer.selectedObject;
       var minBounds = selectedObject.getMinCorner();
       var maxBounds = selectedObject.getMaxCorner();
 
-      t = selectedObject.intersectCube(origin, ray, minBounds, maxBounds);
+      if(selectedObject.intersect2) {
+        t = selectedObject.intersect2(origin, ray, minBounds, maxBounds);
+      } else {
+        t = 0;
+      }
+
 
       if (t < Number.MAX_VALUE) {
         var hit = origin.add(ray.multiply(t));
@@ -111,13 +118,15 @@ export default class UI {
   }
 
   mouseMove(x, y) {
+    console.log("mouseMove x,y", x,y);
+
     if (this.moving) {
       var origin = this.state.eye;
       var ray = Renderer.getEyeRay(
         this.state.modelviewProjection.inverse(),
         x / 512 * 2 - 1,
         1 - y / 512 * 2,
-        this.state.eye
+        origin
       );
 
       var t =

@@ -110,7 +110,7 @@ export default class Cube {
   }
 
   intersect(origin, ray) {
-    return this.intersectCube(
+    return this.intersect2(
       origin,
       ray,
       this.getMinCorner(),
@@ -118,7 +118,7 @@ export default class Cube {
     );
   }
 
-  intersectCube(origin, ray, cubeMin, cubeMax) {
+  intersect2(origin, ray, cubeMin, cubeMax) {
     var tMin = cubeMin.subtract(origin).componentDivide(ray);
     var tMax = cubeMax.subtract(origin).componentDivide(ray);
     var t1 = Vector.min(tMin, tMax);

@@ -91,15 +91,15 @@ export default class Sphere {
   }
 
   intersect(origin, ray) {
-    return Sphere.intersect(
-      origin,
+    return this.intersect2(
+        origin,
       ray,
       this.center.add(this.temporaryTranslation),
       this.radius
     );
   }
 
-  intersect(origin, ray, center, radius) {
+  intersect2(origin, ray, center, radius) {
     var toSphere = origin.subtract(center);
     var a = ray.dot(ray);
     var b = 2 * toSphere.dot(ray);

@@ -11,7 +11,7 @@ let light = new Vector([0.4, 0.5, -0.6]);
 export default class Light {
   constructor(state) {
     this.state = state;
-    this.state.temporaryTranslation = new Vector([0, 0, 0]);
+    this.temporaryTranslation = new Vector([0, 0, 0]);
   }
 
   getGlobalCode() {
@@ -35,7 +35,7 @@ export default class Light {
   }
 
   setUniforms(state) {
-    state.uniforms.light = light.add(this.state.temporaryTranslation);
+    this.state.uniforms.light = light.add(this.temporaryTranslation);
   }
 
   clampPosition(position) {
@@ -48,25 +48,25 @@ export default class Light {
   }
 
   temporaryTranslate(translation) {
-    var tempLight = light.add(translation);
-    Light.clampPosition(tempLight);
-    this.state.temporaryTranslation = tempLight.subtract(light);
+    light = light.add(translation);
+    this.clampPosition(light);
+    this.temporaryTranslation = light.subtract(light);
   }
 
   translate(translation) {
     var tempLight = light.add(translation);
-    Light.clampPosition(tempLight);
+    this.clampPosition(tempLight);
   }
 
   getMinCorner() {
     return light
-      .add(this.state.temporaryTranslation)
+      .add(this.temporaryTranslation)
       .subtract(new Vector([lightSize, lightSize, lightSize]));
   }
 
   getMaxCorner() {
     return light
-      .add(this.state.temporaryTranslation)
+      .add(this.temporaryTranslation)
       .add(new Vector([lightSize, lightSize, lightSize]));
   }
 
