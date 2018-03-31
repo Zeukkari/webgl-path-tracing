@@ -53,7 +53,6 @@ export default class UI {
   }
 
   mouseDown(x, y) {
-    console.log("mouse down (x,y)", x, y);
     var t;
     var origin = this.state.eye;
     var ray = Renderer.getEyeRay(
@@ -112,7 +111,6 @@ export default class UI {
   }
 
   mouseMove(x, y) {
-    console.log("mouse move");
     if (this.moving) {
       var origin = this.state.eye;
       var ray = Renderer.getEyeRay(
@@ -136,8 +134,6 @@ export default class UI {
   }
 
   mouseUp(x, y) {
-    console.log("mouse up (x,y)", x, y);
-
     if (this.moving) {
       var origin = this.state.eye;
       var ray = Renderer.getEyeRay(
