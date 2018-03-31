@@ -9096,6 +9096,7 @@
 	  // upper level
 	  objects.push(new _Cube2.default(new _Vector2.default([-0.25, -0.25, -0.25]), new _Vector2.default([0.25, -0.2, 0.25]), state.nextObjectId++));
 
+	  // state.ui.setObjects(objects);
 	  return objects;
 	}
 
@@ -9128,6 +9129,7 @@
 	  // sphere on table
 	  objects.push(new _Sphere2.default(new _Vector2.default([-0.1, -0.05, 0]), 0.25, state.nextObjectId++));
 
+	  // state.ui.setObjects(objects);
 	  return objects;
 	}
 
@@ -9136,6 +9138,7 @@
 
 	  objects.push(new _Cube2.default(new _Vector2.default([-0.25, -1, -0.25]), new _Vector2.default([0.25, -0.75, 0.25]), state.nextObjectId++));
 	  objects.push(new _Sphere2.default(new _Vector2.default([0, -0.75, 0]), 0.25, state.nextObjectId++));
+	  // state.ui.setObjects(objects);
 	  return objects;
 	}
 
@@ -9145,6 +9148,7 @@
 	  objects.push(new _Sphere2.default(new _Vector2.default([0, 0.25, 0]), 0.25, state.nextObjectId++));
 	  objects.push(new _Sphere2.default(new _Vector2.default([0, -0.25, 0]), 0.25, state.nextObjectId++));
 	  objects.push(new _Sphere2.default(new _Vector2.default([0, -0.75, 0]), 0.25, state.nextObjectId++));
+	  // state.ui.setObjects(objects);
 	  return objects;
 	}
 
@@ -9157,6 +9161,7 @@
 	  objects.push(new _Sphere2.default(new _Vector2.default([0, +0.25, 0]), 0.25, state.nextObjectId++));
 	  objects.push(new _Sphere2.default(new _Vector2.default([0, 0, -0.25]), 0.25, state.nextObjectId++));
 	  objects.push(new _Sphere2.default(new _Vector2.default([0, 0, +0.25]), 0.25, state.nextObjectId++));
+	  // state.ui.setObjects(objects);
 	  return objects;
 	}
 
@@ -9182,6 +9187,7 @@
 	  // third level
 	  objects.push(new _Sphere2.default(new _Vector2.default([0.0, -0.75 + 2.0 * root6_over6, 0.0]), 0.25, state.nextObjectId++));
 
+	  // state.ui.setObjects(objects);
 	  return objects;
 	}
 
@@ -9209,6 +9215,7 @@
 	function makeRecursiveSpheres() {
 	  var objects = [];
 	  addRecursiveSpheresBranch(objects, new _Vector2.default([0, 0, 0]), 0.3, 2, -1);
+	  // state.ui.setObjects(objects);
 	  return objects;
 	}
 
@@ -9279,6 +9286,7 @@
 	  }
 
 	  document.onmousedown = function (event) {
+	    console.log("mousedown", event);
 	    var mouse = canvasMousePos(event);
 	    state.oldX = mouse.x;
 	    state.oldY = mouse.y;
@@ -9336,16 +9344,34 @@
 	    }
 	  };
 
-	  document.getElementById("selectLightButton").onclick = state.ui.selectLight();
-	  document.getElementById("addSphereButton").onclick = state.ui.addSphere();
-	  document.getElementById("addCubeButton").onclick = state.ui.addCube();
+	  document.getElementById("makeSphereColumn").onclick = function (e) {
+	    return state.ui.setObjects(makeSphereColumn());
+	  };
+	  document.getElementById("makeSpherePyramid").onclick = function (e) {
+	    return state.ui.setObjects(makeSpherePyramid());
+	  };
+	  document.getElementById("makeSphereAndCube").onclick = function (e) {
+	    return state.ui.setObjects(makeSphereAndCube());
+	  };
+	  document.getElementById("makeCubeAndSpheres").onclick = function (e) {
+	    return state.ui.setObjects(makeCubeAndSpheres());
+	  };
+	  document.getElementById("makeTableAndChair").onclick = function (e) {
+	    return state.ui.setObjects(makeTableAndChair());
+	  };
+	  document.getElementById("makeStacks").onclick = function (e) {
+	    return state.ui.setObjects(makeStacks());
+	  };
 
-	  document.getElementById("makeSphereColumn").onclick = state.ui.setObjects(makeSphereColumn());
-	  document.getElementById("makeSpherePyramid").onclick = state.ui.setObjects(makeSpherePyramid());
-	  document.getElementById("makeSphereAndCube").onclick = state.ui.setObjects(makeSphereAndCube());
-	  document.getElementById("makeCubeAndSpheres").onclick = state.ui.setObjects(makeCubeAndSpheres());
-	  document.getElementById("makeTableAndChair").onclick = state.ui.setObjects(makeTableAndChair());
-	  document.getElementById("makeStacks").onclick = state.ui.setObjects(makeStacks());
+	  document.getElementById("selectLightButton").onclick = function (e) {
+	    return state.ui.selectLight();
+	  };
+	  document.getElementById("addSphereButton").onclick = function (e) {
+	    return state.ui.addSphere();
+	  };
+	  document.getElementById("addCubeButton").onclick = function (e) {
+	    return state.ui.addCube();
+	  };
 	};
 
 /***/ }),
@@ -11576,11 +11602,11 @@
 	  }, {
 	    key: "intersect",
 	    value: function intersect(origin, ray) {
-	      return Sphere.intersect(origin, ray, this.center.add(this.temporaryTranslation), this.radius);
+	      return this.intersect2(origin, ray, this.center.add(this.temporaryTranslation), this.radius);
 	    }
 	  }, {
-	    key: "intersect",
-	    value: function intersect(origin, ray, center, radius) {
+	    key: "intersect2",
+	    value: function intersect2(origin, ray, center, radius) {
 	      var toSphere = origin.subtract(center);
 	      var a = ray.dot(ray);
 	      var b = 2 * toSphere.dot(ray);
@@ -11637,24 +11663,25 @@
 
 	    this.state = state;
 	    state.renderer = this;
+	    var gl = state.gl;
 
 	    var vertices = [0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1];
 	    var indices = [0, 1, 1, 3, 3, 2, 2, 0, 4, 5, 5, 7, 7, 6, 6, 4, 0, 4, 1, 5, 2, 6, 3, 7];
 
 	    // create vertex buffer
-	    this.state.vertexBuffer = this.state.gl.createBuffer();
-	    this.state.gl.bindBuffer(this.state.gl.ARRAY_BUFFER, this.state.vertexBuffer);
-	    this.state.gl.bufferData(this.state.gl.ARRAY_BUFFER, new Float32Array(vertices), this.state.gl.STATIC_DRAW);
+	    this.vertexBuffer = gl.createBuffer();
+	    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+	    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
 	    // create index buffer
-	    this.state.indexBuffer = this.state.gl.createBuffer();
-	    this.state.gl.bindBuffer(this.state.gl.ELEMENT_ARRAY_BUFFER, this.state.indexBuffer);
-	    this.state.gl.bufferData(this.state.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.state.gl.STATIC_DRAW);
+	    this.indexBuffer = gl.createBuffer();
+	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+	    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
 	    // create line shader
-	    this.state.lineProgram = this.compileShader(_shaders.lineVertexSource, _shaders.lineFragmentSource, this.state.gl);
-	    this.state.vertexAttribute = this.state.gl.getAttribLocation(this.state.lineProgram, "vertex");
-	    this.state.gl.enableVertexAttribArray(this.state.vertexAttribute);
+	    this.lineProgram = this.compileShader(_shaders.lineVertexSource, _shaders.lineFragmentSource);
+	    this.vertexAttribute = gl.getAttribLocation(this.lineProgram, "vertex");
+	    gl.enableVertexAttribArray(this.vertexAttribute);
 
 	    this.state.objects = [];
 	    this.state.selectedObject = null;
@@ -11681,6 +11708,7 @@
 	    key: "compileSource",
 	    value: function compileSource(source, type) {
 	      var shader = this.state.gl.createShader(type);
+	      console.log("compileSource", type, source);
 	      this.state.gl.shaderSource(shader, source);
 	      this.state.gl.compileShader(shader);
 	      if (!this.state.gl.getShaderParameter(shader, this.state.gl.COMPILE_STATUS)) {
@@ -11724,18 +11752,20 @@
 	    value: function render() {
 	      this.state.pathTracer.render();
 
+	      var gl = this.state.gl;
+
 	      if (this.state.selectedObject != null) {
-	        this.state.gl.useProgram(this.state.lineProgram);
-	        this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, null);
-	        this.state.gl.bindBuffer(this.state.gl.ARRAY_BUFFER, this.state.vertexBuffer);
-	        this.state.gl.bindBuffer(this.state.gl.ELEMENT_ARRAY_BUFFER, this.state.indexBuffer);
-	        this.state.gl.vertexAttribPointer(this.state.vertexAttribute, 3, this.state.gl.FLOAT, false, 0, 0);
-	        this.setUniforms(this.state.lineProgram, {
+	        gl.useProgram(this.lineProgram);
+	        gl.bindTexture(this.state.gl.TEXTURE_2D, null);
+	        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+	        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+	        gl.vertexAttribPointer(this.vertexAttribute, 3, gl.FLOAT, false, 0, 0);
+	        this.setUniforms(this.lineProgram, {
 	          cubeMin: this.state.selectedObject.getMinCorner(),
 	          cubeMax: this.state.selectedObject.getMaxCorner(),
 	          modelviewProjection: this.state.modelviewProjection
 	        });
-	        this.state.gl.drawElements(this.state.gl.LINES, 24, this.state.gl.UNSIGNED_SHORT, 0);
+	        gl.drawElements(gl.LINES, 24, gl.UNSIGNED_SHORT, 0);
 	      }
 	    }
 	  }], [{
@@ -11812,7 +11842,7 @@
 	    this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, null);
 
 	    // create render shader
-	    this.state.renderProgram = this.state.renderer.compileShader(_shaders.renderVertexSource, _shaders.renderFragmentSource, this.state.gl);
+	    this.state.renderProgram = this.state.renderer.compileShader(_shaders.renderVertexSource, _shaders.renderFragmentSource);
 	    this.state.renderVertexAttribute = this.state.gl.getAttribLocation(this.state.renderProgram, "vertex");
 	    this.state.gl.enableVertexAttribArray(this.state.renderVertexAttribute);
 
@@ -12093,11 +12123,11 @@
 	  }, {
 	    key: "intersect",
 	    value: function intersect(origin, ray) {
-	      return this.intersectCube(origin, ray, this.getMinCorner(), this.getMaxCorner());
+	      return this.intersect2(origin, ray, this.getMinCorner(), this.getMaxCorner());
 	    }
 	  }, {
-	    key: "intersectCube",
-	    value: function intersectCube(origin, ray, cubeMin, cubeMax) {
+	    key: "intersect2",
+	    value: function intersect2(origin, ray, cubeMin, cubeMax) {
 	      var tMin = cubeMin.subtract(origin).componentDivide(ray);
 	      var tMax = cubeMax.subtract(origin).componentDivide(ray);
 	      var t1 = _Vector2.default.min(tMin, tMax);
@@ -12183,9 +12213,9 @@
 	  _createClass(UI, [{
 	    key: "setObjects",
 	    value: function setObjects(objects) {
-	      this.state.objects = objects;
-	      this.state.objects.splice(0, 0, new _Light2.default(this.state));
-	      this.state.renderer.setObjects(this.state.objects);
+	      //this.state.objects = objects;
+	      objects.splice(0, 0, new _Light2.default(this.state));
+	      this.state.renderer.setObjects(objects);
 	    }
 	  }, {
 	    key: "update",
@@ -12199,17 +12229,24 @@
 	  }, {
 	    key: "mouseDown",
 	    value: function mouseDown(x, y) {
+
+	      console.log("mouseDown x,y", x, y);
+
 	      var t;
 	      var origin = this.state.eye;
 	      var ray = _Renderer2.default.getEyeRay(this.state.modelviewProjection.inverse(), x / 512 * 2 - 1, 1 - y / 512 * 2, origin);
 
 	      // test the selection box first
-	      if (this.state.renderer.selectedObject != null && this.state.renderer.selectedObject.intersectCube !== undefined) {
+	      if (this.state.renderer.selectedObject != null) {
 	        var selectedObject = this.state.renderer.selectedObject;
 	        var minBounds = selectedObject.getMinCorner();
 	        var maxBounds = selectedObject.getMaxCorner();
 
-	        t = selectedObject.intersectCube(origin, ray, minBounds, maxBounds);
+	        if (selectedObject.intersect2) {
+	          t = selectedObject.intersect2(origin, ray, minBounds, maxBounds);
+	        } else {
+	          t = 0;
+	        }
 
 	        if (t < Number.MAX_VALUE) {
 	          var hit = origin.add(ray.multiply(t));
@@ -12240,9 +12277,11 @@
 	  }, {
 	    key: "mouseMove",
 	    value: function mouseMove(x, y) {
+	      console.log("mouseMove x,y", x, y);
+
 	      if (this.moving) {
 	        var origin = this.state.eye;
-	        var ray = _Renderer2.default.getEyeRay(this.state.modelviewProjection.inverse(), x / 512 * 2 - 1, 1 - y / 512 * 2, this.state.eye);
+	        var ray = _Renderer2.default.getEyeRay(this.state.modelviewProjection.inverse(), x / 512 * 2 - 1, 1 - y / 512 * 2, origin);
 
 	        var t = (this.movementDistance - this.movementNormal.dot(origin)) / this.movementNormal.dot(ray);
 	        var hit = origin.add(ray.multiply(t));
@@ -12369,7 +12408,7 @@
 	    _classCallCheck(this, Light);
 
 	    this.state = state;
-	    this.state.temporaryTranslation = new _Vector2.default([0, 0, 0]);
+	    this.temporaryTranslation = new _Vector2.default([0, 0, 0]);
 	  }
 
 	  _createClass(Light, [{
@@ -12400,7 +12439,7 @@
 	  }, {
 	    key: "setUniforms",
 	    value: function setUniforms(state) {
-	      state.uniforms.light = light.add(this.state.temporaryTranslation);
+	      this.state.uniforms.light = light.add(this.temporaryTranslation);
 	    }
 	  }, {
 	    key: "clampPosition",
@@ -12412,25 +12451,25 @@
 	  }, {
 	    key: "temporaryTranslate",
 	    value: function temporaryTranslate(translation) {
-	      var tempLight = light.add(translation);
-	      Light.clampPosition(tempLight);
-	      this.state.temporaryTranslation = tempLight.subtract(light);
+	      light = light.add(translation);
+	      this.clampPosition(light);
+	      this.temporaryTranslation = light.subtract(light);
 	    }
 	  }, {
 	    key: "translate",
 	    value: function translate(translation) {
 	      var tempLight = light.add(translation);
-	      Light.clampPosition(tempLight);
+	      this.clampPosition(tempLight);
 	    }
 	  }, {
 	    key: "getMinCorner",
 	    value: function getMinCorner() {
-	      return light.add(this.state.temporaryTranslation).subtract(new _Vector2.default([lightSize, lightSize, lightSize]));
+	      return light.add(this.temporaryTranslation).subtract(new _Vector2.default([lightSize, lightSize, lightSize]));
 	    }
 	  }, {
 	    key: "getMaxCorner",
 	    value: function getMaxCorner() {
-	      return light.add(this.state.temporaryTranslation).add(new _Vector2.default([lightSize, lightSize, lightSize]));
+	      return light.add(this.temporaryTranslation).add(new _Vector2.default([lightSize, lightSize, lightSize]));
 	    }
 	  }, {
 	    key: "intersect",

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>WebGL Path Tracing</title>
+  <meta name="description" content="A cool thing made with Glitch">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+
+  <h1>WebGL Path Tracing</h1>
+
+  <p>Path tracing is a realistic lighting algorithm that simulates light bouncing around a scene.&nbsp; This path tracer uses
+    WebGL for realtime performance and supports diffuse, mirrored, and glossy surfaces.&nbsp; The path tracer is continually
+    rendering, so the scene will start off grainy and become smoother over time.&nbsp; Here's how to interact with it:</p>
+
+  <ul>
+    <li>Add an object using the "Add Sphere" or "Add Cube" buttons</li>
+    <li>Select an object by clicking on it</li>
+    <li>Move the selection along the face of its selection box by dragging around on that face</li>
+    <li>Delete the selection using the backspace key</li>
+    <li>Rotate the camera by dragging the background</li>
+  </ul>
+
+  <div id="main">
+    <canvas id="canvas" width="512" height="512"></canvas>
+    <div id="error">
+      <noscript>Please enable JavaScript.</noscript>
+    </div>
+
+    <p>
+      <b>Material:</b>
+      <select id="material">
+        <option value="0" selected>Diffuse</option>
+        <option value="1">Mirror</option>
+        <option value="2">Glossy</option>
+      </select>
+      <span id="glossiness-factor">
+        <br>with glossiness factor: 0 &lt;
+        <input id="glossiness" value="0.6"> &lt; 1
+      </span>
+      <br>
+
+      <b>Environment:</b>
+      <select id="environment">
+        <option value="0" selected>Cornell Box - Yellow and Blue</option>
+        <option value="1">Cornell Box - Red and Green</option>
+      </select>
+    </p>
+
+
+
+    <b>TODO--</b>
+    <p>
+      <button id="selectLightButton">Select Light</button>
+      <button id="addSphereButton">Add Sphere</button>
+      <button id="addCubeButton">Add Cube</button>
+    </p>
+
+    <p>
+      <b>Load preset scene:</b>
+      <br>
+      <button id="makeSphereColumn">Sphere Column</button>
+      <br>
+      <button id="makeSpherePyramid">Sphere Pyramid</button>
+      <br>
+      <button id="makeSphereAndCube">Sphere and Cube</button>
+      <br>
+      <button id="makeCubeAndSpheres">Cube and Spheres</button>
+      <br>
+      <button id="makeTableAndChair">Table and Chair</button>
+      <br>
+      <button id="makeStacks">Stacks</button>
+    </p>
+
+  </div>
+
+<script type="text/javascript" src="bundle.js"></script></body>
+
+</html>
