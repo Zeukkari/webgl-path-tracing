@@ -715,8 +715,8 @@ window.onload = function() {
   state.gl = null;
   state.error = document.getElementById("error");
   state.canvas = document.getElementById("canvas");
-  // state.canvas.setAttribute("width", config.resolution);
-  // state.canvas.setAttribute("height", config.resolution);
+  state.canvas.setAttribute("width", config.resolution);
+  state.canvas.setAttribute("height", config.resolution);
 
   try {
     state.gl = canvas.getContext("experimental-webgl");

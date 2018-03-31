@@ -208,7 +208,7 @@ export default class Renderer {
     }
     const jitter = Matrix.Translation(
       new Vector([Math.random() * 2 - 1, Math.random() * 2 - 1, 0]).multiply(
-        1 / 512
+        1 / config.resolution
       )
     );
     const inverse = jitter.multiply(modelviewProjection).inverse();
