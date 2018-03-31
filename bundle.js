@@ -8893,74 +8893,79 @@
 
 	var _Vector2 = _interopRequireDefault(_Vector);
 
-	var _Matrix = __webpack_require__(329);
+	var _Matrix = __webpack_require__(330);
 
 	var _Matrix2 = _interopRequireDefault(_Matrix);
 
-	var _Line = __webpack_require__(330);
+	var _Line = __webpack_require__(331);
 
 	var _Line2 = _interopRequireDefault(_Line);
 
-	var _Plane = __webpack_require__(331);
+	var _Plane = __webpack_require__(332);
 
 	var _Plane2 = _interopRequireDefault(_Plane);
 
-	var _Sphere = __webpack_require__(332);
+	var _Sphere = __webpack_require__(333);
 
 	var _Sphere2 = _interopRequireDefault(_Sphere);
 
-	var _Cube = __webpack_require__(336);
+	var _Cube = __webpack_require__(337);
 
 	var _Cube2 = _interopRequireDefault(_Cube);
 
-	var _UI = __webpack_require__(337);
+	var _UI = __webpack_require__(338);
 
 	var _UI2 = _interopRequireDefault(_UI);
 
-	var _Renderer = __webpack_require__(333);
+	var _Renderer = __webpack_require__(334);
 
 	var _Renderer2 = _interopRequireDefault(_Renderer);
 
-	var _PathTracer = __webpack_require__(334);
+	var _PathTracer = __webpack_require__(335);
 
 	var _PathTracer2 = _interopRequireDefault(_PathTracer);
 
-	var _glUtils = __webpack_require__(339);
+	var _glUtils = __webpack_require__(340);
 
 	var _glUtils2 = _interopRequireDefault(_glUtils);
 
-	var _shaders = __webpack_require__(335);
+	var _config = __webpack_require__(329);
+
+	var _config2 = _interopRequireDefault(_config);
+
+	var _shaders = __webpack_require__(336);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var MATERIAL_DIFFUSE = 0; /*
-	                           WebGL Path Tracing (http://madebyevan.com/webgl-path-tracing/)
-	                           License: MIT License (see below)
-	                          
-	                           Copyright (c) 2010 Evan Wallace
-	                          
-	                           Permission is hereby granted, free of charge, to any person
-	                           obtaining a copy of this software and associated documentation
-	                           files (the "Software"), to deal in the Software without
-	                           restriction, including without limitation the rights to use,
-	                           copy, modify, merge, publish, distribute, sublicense, and/or sell
-	                           copies of the Software, and to permit persons to whom the
-	                           Software is furnished to do so, subject to the following
-	                           conditions:
-	                          
-	                           The above copyright notice and this permission notice shall be
-	                           included in all copies or substantial portions of the Software.
-	                          
-	                           THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-	                           EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-	                           OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-	                           NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-	                           HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-	                           WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-	                           FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-	                           OTHER DEALINGS IN THE SOFTWARE.
-	                          */
+	/*
+	 WebGL Path Tracing (http://madebyevan.com/webgl-path-tracing/)
+	 License: MIT License (see below)
 
+	 Copyright (c) 2010 Evan Wallace
+
+	 Permission is hereby granted, free of charge, to any person
+	 obtaining a copy of this software and associated documentation
+	 files (the "Software"), to deal in the Software without
+	 restriction, including without limitation the rights to use,
+	 copy, modify, merge, publish, distribute, sublicense, and/or sell
+	 copies of the Software, and to permit persons to whom the
+	 Software is furnished to do so, subject to the following
+	 conditions:
+
+	 The above copyright notice and this permission notice shall be
+	 included in all copies or substantial portions of the Software.
+
+	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+	 EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+	 OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+	 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+	 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+	 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+	 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+	 OTHER DEALINGS IN THE SOFTWARE.
+	*/
+
+	var MATERIAL_DIFFUSE = 0;
 	var MATERIAL_MIRROR = 1;
 	var MATERIAL_GLOSSY = 2;
 
@@ -9049,7 +9054,7 @@
 	}
 
 	function makeMain() {
-	  return "" + " void main() {" + "   vec3 newLight = light + uniformlyRandomVector(timeSinceStart - 53.0) * " + _shaders.lightSize + ";" + "   vec3 texture = texture2D(texture, gl_FragCoord.xy / 512.0).rgb;" + "   gl_FragColor = vec4(mix(calculateColor(eye, initialRay, newLight), texture, textureWeight), 1.0);" + " }";
+	  return "" + " void main() {" + "   vec3 newLight = light + uniformlyRandomVector(timeSinceStart - 53.0) * " + _shaders.lightSize + ";" + "   vec3 texture = texture2D(texture, gl_FragCoord.xy / " + _config2.default.resolution + ").rgb;" + "   gl_FragColor = vec4(mix(calculateColor(eye, initialRay, newLight), texture, textureWeight), 1.0);" + " }";
 	}
 
 	var makeTracerFragmentSource = exports.makeTracerFragmentSource = function makeTracerFragmentSource(objects) {
@@ -9068,8 +9073,9 @@
 	  state.ui.updateMaterial();
 	  state.ui.updateGlossiness();
 	  state.ui.updateEnvironment();
-	  state.ui.update(timeSinceStart);
+
 	  state.ui.render();
+	  state.ui.update(timeSinceStart);
 	}
 
 	function makeStacks() {
@@ -9252,6 +9258,9 @@
 	  state.gl = null;
 	  state.error = document.getElementById("error");
 	  state.canvas = document.getElementById("canvas");
+	  // state.canvas.setAttribute("width", config.resolution);
+	  // state.canvas.setAttribute("height", config.resolution);
+
 	  try {
 	    state.gl = canvas.getContext("experimental-webgl");
 	  } catch (e) {
@@ -9275,7 +9284,7 @@
 	    state.material = parseInt(document.getElementById("material").value, 10);
 	    state.environment = parseInt(document.getElementById("environment").value, 10);
 	    state.ui = new _UI2.default(state);
-	    state.ui.setObjects(makeSphereAndCube());
+	    state.ui.setObjects(makeTableAndChair());
 	    var start = new Date();
 	    error.style.zIndex = -1;
 	    setInterval(function () {
@@ -9291,7 +9300,7 @@
 	    state.oldX = mouse.x;
 	    state.oldY = mouse.y;
 
-	    if (mouse.x >= 0 && mouse.x < 512 && mouse.y >= 0 && mouse.y < 512) {
+	    if (mouse.x >= 0 && mouse.x < _config2.default.resolution && mouse.y >= 0 && mouse.y < _config2.default.resolution) {
 	      state.mouseDown = !state.ui.mouseDown(mouse.x, mouse.y);
 
 	      // disable selection because dragging is used for rotating the camera and moving objects
@@ -9376,7 +9385,7 @@
 
 /***/ }),
 /* 328 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
@@ -9385,6 +9394,12 @@
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _config = __webpack_require__(329);
+
+	var _config2 = _interopRequireDefault(_config);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -9938,6 +9953,19 @@
 
 /***/ }),
 /* 329 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = {
+	  resolution: "512.0"
+	};
+
+/***/ }),
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -9951,6 +9979,10 @@
 	var _Vector = __webpack_require__(328);
 
 	var _Vector2 = _interopRequireDefault(_Vector);
+
+	var _config = __webpack_require__(329);
+
+	var _config2 = _interopRequireDefault(_config);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -10833,7 +10865,7 @@
 	exports.default = Matrix;
 
 /***/ }),
-/* 330 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -10848,13 +10880,17 @@
 
 	var _Vector2 = _interopRequireDefault(_Vector);
 
-	var _Matrix = __webpack_require__(329);
+	var _Matrix = __webpack_require__(330);
 
 	var _Matrix2 = _interopRequireDefault(_Matrix);
 
-	var _Plane = __webpack_require__(331);
+	var _Plane = __webpack_require__(332);
 
 	var _Plane2 = _interopRequireDefault(_Plane);
+
+	var _config = __webpack_require__(329);
+
+	var _config2 = _interopRequireDefault(_config);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11166,7 +11202,7 @@
 	exports.default = Line;
 
 /***/ }),
-/* 331 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -11181,13 +11217,17 @@
 
 	var _Vector2 = _interopRequireDefault(_Vector);
 
-	var _Matrix = __webpack_require__(329);
+	var _Matrix = __webpack_require__(330);
 
 	var _Matrix2 = _interopRequireDefault(_Matrix);
 
-	var _Line = __webpack_require__(330);
+	var _Line = __webpack_require__(331);
 
 	var _Line2 = _interopRequireDefault(_Line);
+
+	var _config = __webpack_require__(329);
+
+	var _config2 = _interopRequireDefault(_config);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11513,7 +11553,7 @@
 	exports.default = Plane;
 
 /***/ }),
-/* 332 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -11528,9 +11568,13 @@
 
 	var _Vector2 = _interopRequireDefault(_Vector);
 
-	var _Renderer = __webpack_require__(333);
+	var _Renderer = __webpack_require__(334);
 
 	var _Renderer2 = _interopRequireDefault(_Renderer);
+
+	var _config = __webpack_require__(329);
+
+	var _config2 = _interopRequireDefault(_config);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11602,11 +11646,11 @@
 	  }, {
 	    key: "intersect",
 	    value: function intersect(origin, ray) {
-	      return this.intersect2(origin, ray, this.center.add(this.temporaryTranslation), this.radius);
+	      return this.intersects(origin, ray, this.center.add(this.temporaryTranslation), this.radius);
 	    }
 	  }, {
-	    key: "intersect2",
-	    value: function intersect2(origin, ray, center, radius) {
+	    key: "intersects",
+	    value: function intersects(origin, ray, center, radius) {
 	      var toSphere = origin.subtract(center);
 	      var a = ray.dot(ray);
 	      var b = 2 * toSphere.dot(ray);
@@ -11628,7 +11672,7 @@
 	exports.default = Sphere;
 
 /***/ }),
-/* 333 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -11643,15 +11687,19 @@
 
 	var _Vector2 = _interopRequireDefault(_Vector);
 
-	var _Matrix = __webpack_require__(329);
+	var _Matrix = __webpack_require__(330);
 
 	var _Matrix2 = _interopRequireDefault(_Matrix);
 
-	var _PathTracer = __webpack_require__(334);
+	var _PathTracer = __webpack_require__(335);
 
 	var _PathTracer2 = _interopRequireDefault(_PathTracer);
 
-	var _shaders = __webpack_require__(335);
+	var _config = __webpack_require__(329);
+
+	var _config2 = _interopRequireDefault(_config);
+
+	var _shaders = __webpack_require__(336);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11782,7 +11830,7 @@
 	exports.default = Renderer;
 
 /***/ }),
-/* 334 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -11797,17 +11845,21 @@
 
 	var _Vector2 = _interopRequireDefault(_Vector);
 
-	var _Matrix = __webpack_require__(329);
+	var _Matrix = __webpack_require__(330);
 
 	var _Matrix2 = _interopRequireDefault(_Matrix);
 
-	var _Renderer = __webpack_require__(333);
+	var _Renderer = __webpack_require__(334);
 
 	var _Renderer2 = _interopRequireDefault(_Renderer);
 
+	var _config = __webpack_require__(329);
+
+	var _config2 = _interopRequireDefault(_config);
+
 	var _index = __webpack_require__(327);
 
-	var _shaders = __webpack_require__(335);
+	var _shaders = __webpack_require__(336);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11922,20 +11974,27 @@
 	exports.default = PathTracer;
 
 /***/ }),
-/* 335 */
-/***/ (function(module, exports) {
+/* 336 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	////////////////////////////////////////////////////////////////////////////////
+	exports.infinity = exports.epsilon = exports.lightVal = exports.lightSize = exports.bounces = exports.redGreenCornellBox = exports.yellowBlueCornellBox = exports.newGlossyRay = exports.newReflectiveRay = exports.newDiffuseRay = exports.specularReflection = exports.uniformlyRandomVectorSource = exports.uniformlyRandomDirectionSource = exports.cosineWeightedDirectionSource = exports.randomSource = exports.normalForSphereSource = exports.intersectSphereSource = exports.normalForCubeSource = exports.intersectCubeSource = exports.tracerFragmentSourceHeader = exports.tracerVertexSource = exports.lineFragmentSource = exports.lineVertexSource = exports.renderFragmentSource = exports.renderVertexSource = undefined;
+
+	var _config = __webpack_require__(329);
+
+	var _config2 = _interopRequireDefault(_config);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	// constants for the shaders
+	var bounces = "5"; ////////////////////////////////////////////////////////////////////////////////
 	// shader strings
 	////////////////////////////////////////////////////////////////////////////////
 
-	// constants for the shaders
-	var bounces = "5";
 	var lightSize = 0.1;
 	var lightVal = 0.5;
 	var epsilon = "0.0001";
@@ -12034,7 +12093,7 @@
 	exports.infinity = infinity;
 
 /***/ }),
-/* 336 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -12048,6 +12107,10 @@
 	var _Vector = __webpack_require__(328);
 
 	var _Vector2 = _interopRequireDefault(_Vector);
+
+	var _config = __webpack_require__(329);
+
+	var _config2 = _interopRequireDefault(_config);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -12123,11 +12186,11 @@
 	  }, {
 	    key: "intersect",
 	    value: function intersect(origin, ray) {
-	      return this.intersect2(origin, ray, this.getMinCorner(), this.getMaxCorner());
+	      return this.intersects(origin, ray, this.getMinCorner(), this.getMaxCorner());
 	    }
 	  }, {
-	    key: "intersect2",
-	    value: function intersect2(origin, ray, cubeMin, cubeMax) {
+	    key: "intersects",
+	    value: function intersects(origin, ray, cubeMin, cubeMax) {
 	      var tMin = cubeMin.subtract(origin).componentDivide(ray);
 	      var tMax = cubeMax.subtract(origin).componentDivide(ray);
 	      var t1 = _Vector2.default.min(tMin, tMax);
@@ -12147,7 +12210,7 @@
 	exports.default = Cube;
 
 /***/ }),
-/* 337 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -12162,27 +12225,31 @@
 
 	var _Vector2 = _interopRequireDefault(_Vector);
 
-	var _Matrix = __webpack_require__(329);
+	var _Matrix = __webpack_require__(330);
 
 	var _Matrix2 = _interopRequireDefault(_Matrix);
 
-	var _Cube = __webpack_require__(336);
+	var _Cube = __webpack_require__(337);
 
 	var _Cube2 = _interopRequireDefault(_Cube);
 
-	var _Sphere = __webpack_require__(332);
+	var _Sphere = __webpack_require__(333);
 
 	var _Sphere2 = _interopRequireDefault(_Sphere);
 
-	var _Renderer = __webpack_require__(333);
+	var _Renderer = __webpack_require__(334);
 
 	var _Renderer2 = _interopRequireDefault(_Renderer);
 
-	var _Light = __webpack_require__(338);
+	var _Light = __webpack_require__(339);
 
 	var _Light2 = _interopRequireDefault(_Light);
 
-	var _glUtils = __webpack_require__(339);
+	var _glUtils = __webpack_require__(340);
+
+	var _config = __webpack_require__(329);
+
+	var _config2 = _interopRequireDefault(_config);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -12234,7 +12301,7 @@
 
 	      var t;
 	      var origin = this.state.eye;
-	      var ray = _Renderer2.default.getEyeRay(this.state.modelviewProjection.inverse(), x / 512 * 2 - 1, 1 - y / 512 * 2, origin);
+	      var ray = _Renderer2.default.getEyeRay(this.state.modelviewProjection.inverse(), x / _config2.default.resolution * 2 - 1, 1 - y / _config2.default.resolution * 2, origin);
 
 	      // test the selection box first
 	      if (this.state.renderer.selectedObject != null) {
@@ -12242,8 +12309,8 @@
 	        var minBounds = selectedObject.getMinCorner();
 	        var maxBounds = selectedObject.getMaxCorner();
 
-	        if (selectedObject.intersect2) {
-	          t = selectedObject.intersect2(origin, ray, minBounds, maxBounds);
+	        if (selectedObject.intersect) {
+	          t = selectedObject.intersect(origin, ray, minBounds, maxBounds);
 	        } else {
 	          t = 0;
 	        }
@@ -12281,7 +12348,7 @@
 
 	      if (this.moving) {
 	        var origin = this.state.eye;
-	        var ray = _Renderer2.default.getEyeRay(this.state.modelviewProjection.inverse(), x / 512 * 2 - 1, 1 - y / 512 * 2, origin);
+	        var ray = _Renderer2.default.getEyeRay(this.state.modelviewProjection.inverse(), x / _config2.default.resolution * 2 - 1, 1 - y / _config2.default.resolution * 2, origin);
 
 	        var t = (this.movementDistance - this.movementNormal.dot(origin)) / this.movementNormal.dot(ray);
 	        var hit = origin.add(ray.multiply(t));
@@ -12296,7 +12363,7 @@
 	    value: function mouseUp(x, y) {
 	      if (this.moving) {
 	        var origin = this.state.eye;
-	        var ray = _Renderer2.default.getEyeRay(this.state.modelviewProjection.inverse(), x / 512 * 2 - 1, 1 - y / 512 * 2, origin);
+	        var ray = _Renderer2.default.getEyeRay(this.state.modelviewProjection.inverse(), x / _config2.default.resolution * 2 - 1, 1 - y / _config2.default.resolution * 2, origin);
 
 	        var t = (this.movementDistance - this.movementNormal.dot(origin)) / this.movementNormal.dot(ray);
 	        var hit = origin.add(ray.multiply(t));
@@ -12376,7 +12443,7 @@
 	exports.default = UI;
 
 /***/ }),
-/* 338 */
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -12390,6 +12457,10 @@
 	var _Vector = __webpack_require__(328);
 
 	var _Vector2 = _interopRequireDefault(_Vector);
+
+	var _config = __webpack_require__(329);
+
+	var _config2 = _interopRequireDefault(_config);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -12484,7 +12555,7 @@
 	exports.default = Light;
 
 /***/ }),
-/* 339 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -12498,17 +12569,21 @@
 
 	var _Vector2 = _interopRequireDefault(_Vector);
 
-	var _Matrix = __webpack_require__(329);
+	var _Matrix = __webpack_require__(330);
 
 	var _Matrix2 = _interopRequireDefault(_Matrix);
 
-	var _Line = __webpack_require__(330);
+	var _Line = __webpack_require__(331);
 
 	var _Line2 = _interopRequireDefault(_Line);
 
-	var _Plane = __webpack_require__(331);
+	var _Plane = __webpack_require__(332);
 
 	var _Plane2 = _interopRequireDefault(_Plane);
+
+	var _config = __webpack_require__(329);
+
+	var _config2 = _interopRequireDefault(_config);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

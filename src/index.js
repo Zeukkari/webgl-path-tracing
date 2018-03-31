@@ -744,7 +744,7 @@ window.onload = function() {
       10
     );
     state.ui = new UI(state);
-    state.ui.setObjects(makeSphereAndCube());
+    state.ui.setObjects(makeTableAndChair());
     var start = new Date();
     error.style.zIndex = -1;
     setInterval(function() {
