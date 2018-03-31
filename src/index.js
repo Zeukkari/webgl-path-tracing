@@ -65,6 +65,17 @@ import {
   infinity
 } from "./shaders";
 
+const MATERIAL_DIFFUSE = 0;
+const MATERIAL_MIRROR = 1;
+const MATERIAL_GLOSSY = 2;
+
+const YELLOW_BLUE_CORNELL_BOX = 0;
+const RED_GREEN_CORNELL_BOX = 1;
+
+let environment = YELLOW_BLUE_CORNELL_BOX;
+let material = MATERIAL_DIFFUSE;
+let glossiness = 0.6;
+
 const state = {
   nextObjectId: 0,
   eye: new Vector([0, 0, 0]),
@@ -93,20 +104,11 @@ const state = {
   lineProgram: undefined,
   selectedObject: null,
   pathTracer: null,
-  sampleCount: 0
+  sampleCount: 0,
+  glossiness: 0.6
 };
 
 window.state = state;
-
-var MATERIAL_DIFFUSE = 0;
-var MATERIAL_MIRROR = 1;
-var MATERIAL_GLOSSY = 2;
-var material = MATERIAL_DIFFUSE;
-var glossiness = 0.6;
-
-var YELLOW_BLUE_CORNELL_BOX = 0;
-var RED_GREEN_CORNELL_BOX = 1;
-var environment = YELLOW_BLUE_CORNELL_BOX;
 
 const concat = function(objects, func) {
   var text = "";
@@ -159,7 +161,7 @@ function makeCalculateColor(objects) {
     // calculate the normal (and change wall color)
     "     if(t == tRoom.y) {" +
     "       normal = -normalForCube(hit, roomCubeMin, roomCubeMax);" +
-    [yellowBlueCornellBox, redGreenCornellBox][environment] +
+    [yellowBlueCornellBox, redGreenCornellBox][state.environment] +
     newDiffuseRay +
     "     } else if(t == " +
     infinity +
@@ -170,7 +172,7 @@ function makeCalculateColor(objects) {
     concat(objects, function(o) {
       return o.getNormalCalculationCode();
     }) +
-    [newDiffuseRay, newReflectiveRay, newGlossyRay][material] +
+    [newDiffuseRay, newReflectiveRay, newGlossyRay][state.material] +
     "     }" +
     // compute diffuse lighting contribution
     "     vec3 toLight = light - hit;" +
@@ -227,8 +229,6 @@ export const makeTracerFragmentSource = function(objects) {
 };
 
 function tick(timeSinceStart) {
-  // console.log("state.ui: ", state.ui);
-
   state.eye.elements[0] =
     state.zoomZ * Math.sin(state.angleY) * Math.cos(state.angleX);
   state.eye.elements[1] = state.zoomZ * Math.sin(state.angleX);
@@ -236,7 +236,7 @@ function tick(timeSinceStart) {
     state.zoomZ * Math.cos(state.angleY) * Math.cos(state.angleX);
 
   document.getElementById("glossiness-factor").style.display =
-    state.ui.material == MATERIAL_GLOSSY ? "inline" : "none";
+    state.material == MATERIAL_GLOSSY ? "inline" : "none";
 
   state.ui.updateMaterial();
   state.ui.updateGlossiness();

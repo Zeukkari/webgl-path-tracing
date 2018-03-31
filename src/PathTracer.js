@@ -34,8 +34,11 @@ export default class PathTracer {
     var vertices = [-1, -1, -1, +1, +1, -1, +1, +1];
 
     // create vertex buffer
-    this.vertexBuffer = this.state.gl.createBuffer();
-    this.state.gl.bindBuffer(this.state.gl.ARRAY_BUFFER, this.vertexBuffer);
+    this.state.vertexBuffer = this.state.gl.createBuffer();
+    this.state.gl.bindBuffer(
+      this.state.gl.ARRAY_BUFFER,
+      this.state.vertexBuffer
+    );
     this.state.gl.bufferData(
       this.state.gl.ARRAY_BUFFER,
       new Float32Array(vertices),
@@ -168,7 +171,10 @@ export default class PathTracer {
     // render to texture
     this.state.gl.useProgram(this.state.tracerProgram);
     this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, this.state.textures[0]);
-    this.state.gl.bindBuffer(this.state.gl.ARRAY_BUFFER, this.vertexBuffer);
+    this.state.gl.bindBuffer(
+      this.state.gl.ARRAY_BUFFER,
+      this.state.vertexBuffer
+    );
     this.state.gl.bindFramebuffer(
       this.state.gl.FRAMEBUFFER,
       this.state.framebuffer
@@ -199,7 +205,10 @@ export default class PathTracer {
   render() {
     this.state.gl.useProgram(this.state.renderProgram);
     this.state.gl.bindTexture(this.state.gl.TEXTURE_2D, this.state.textures[0]);
-    this.state.gl.bindBuffer(this.state.gl.ARRAY_BUFFER, this.vertexBuffer);
+    this.state.gl.bindBuffer(
+      this.state.gl.ARRAY_BUFFER,
+      this.state.vertexBuffer
+    );
     this.state.gl.vertexAttribPointer(
       this.state.renderVertexAttribute,
       2,

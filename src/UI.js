@@ -211,8 +211,8 @@ export default class UI {
       document.getElementById("environment").value,
       10
     );
-    if (environment != newEnvironment) {
-      environment = newEnvironment;
+    if (this.state.environment != newEnvironment) {
+      this.state.environment = newEnvironment;
       this.state.renderer.setObjects(this.state.objects);
     }
   }
@@ -221,9 +221,12 @@ export default class UI {
     var newGlossiness = parseFloat(document.getElementById("glossiness").value);
     if (isNaN(newGlossiness)) newGlossiness = 0;
     newGlossiness = Math.max(0, Math.min(1, newGlossiness));
-    if (this.material == MATERIAL_GLOSSY && glossiness != newGlossiness) {
+    if (
+      this.state.material == MATERIAL_GLOSSY &&
+      this.state.glossiness != newGlossiness
+    ) {
       this.state.sampleCount = 0;
     }
-    this.glossiness = newGlossiness;
+    this.state.glossiness = newGlossiness;
   }
 }

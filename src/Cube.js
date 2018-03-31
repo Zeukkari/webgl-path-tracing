@@ -1,7 +1,5 @@
 import Vector from "./Vector";
 
-console.log("Vector: ", Vector);
-
 export default class Cube {
   constructor(minCorner, maxCorner, id) {
     this.minCorner = minCorner;
@@ -123,7 +121,6 @@ export default class Cube {
   intersectCube(origin, ray, cubeMin, cubeMax) {
     var tMin = cubeMin.subtract(origin).componentDivide(ray);
     var tMax = cubeMax.subtract(origin).componentDivide(ray);
-    console.log("tMin, tMax: ", tMin, tMax);
     var t1 = Vector.min(tMin, tMax);
     var t2 = Vector.max(tMin, tMax);
     var tNear = t1.maxComponent();
