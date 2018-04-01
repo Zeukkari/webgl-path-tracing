@@ -1,3 +1,3 @@
 export default {
-  resolution: "512.0"
+  resolution: "1024.0"
 };
