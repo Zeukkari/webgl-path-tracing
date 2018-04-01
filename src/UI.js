@@ -54,8 +54,6 @@ export default class UI {
   }
 
   mouseDown(x, y) {
-    console.log("mouseDown x,y", x, y);
-
     var t;
     var origin = this.state.eye;
     var ray = Renderer.getEyeRay(
@@ -71,7 +69,11 @@ export default class UI {
       var minBounds = selectedObject.getMinCorner();
       var maxBounds = selectedObject.getMaxCorner();
 
-      t = selectedObject.intersects(origin, ray, minBounds, maxBounds);
+      if (selectedObject.intersect) {
+        t = selectedObject.intersect(origin, ray, minBounds, maxBounds);
+      } else {
+        t = 0;
+      }
 
       if (t < Number.MAX_VALUE) {
         var hit = origin.add(ray.multiply(t));

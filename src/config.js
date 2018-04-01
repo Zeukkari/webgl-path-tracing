@@ -1,3 +1,3 @@
 export default {
-  resolution: "2048.0"
-}
+  resolution: "1024.0"
+};
