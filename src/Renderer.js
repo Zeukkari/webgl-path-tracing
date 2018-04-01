@@ -205,7 +205,6 @@ export default class Renderer {
     const gl = this.state.gl;
 
     if (this.state.selectedObject != null) {
-      console.log("selected object not null", this.state.selectedObject);
       gl.useProgram(this.lineProgram);
       gl.bindTexture(this.state.gl.TEXTURE_2D, null);
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
