@@ -69,10 +69,10 @@ export default class UI {
       var minBounds = selectedObject.getMinCorner();
       var maxBounds = selectedObject.getMaxCorner();
 
-      if (selectedObject.intersects !== undefined) {
-        t = selectedObject.intersects(origin, ray, minBounds, maxBounds);
-      } else if (selectedObject.intersect !== undefined) {
-        t = selectedObject.intersect(origin, ray);
+      if (selectedObject.intersect) {
+        t = selectedObject.intersect(origin, ray, minBounds, maxBounds);
+      } else {
+        t = 0;
       }
 
       if (t < Number.MAX_VALUE) {
