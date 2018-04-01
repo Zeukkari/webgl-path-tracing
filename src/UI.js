@@ -54,9 +54,6 @@ export default class UI {
   }
 
   mouseDown(x, y) {
-
-    console.log("mouseDown x,y", x,y)
-
     var t;
     var origin = this.state.eye;
     var ray = Renderer.getEyeRay(
@@ -67,19 +64,16 @@ export default class UI {
     );
 
     // test the selection box first
-    if (
-      this.state.renderer.selectedObject != null
-    ) {
-      var selectedObject = this.state.renderer.selectedObject;
+    if (this.state.selectedObject != null) {
+      var selectedObject = this.state.selectedObject;
       var minBounds = selectedObject.getMinCorner();
       var maxBounds = selectedObject.getMaxCorner();
 
-      if(selectedObject.intersect) {
-        t = selectedObject.intersect(origin, ray, minBounds, maxBounds);
-      } else {
-        t = 0;
+      if (selectedObject.intersects !== undefined) {
+        t = selectedObject.intersects(origin, ray, minBounds, maxBounds);
+      } else if (selectedObject.intersect !== undefined) {
+        t = selectedObject.intersect(origin, ray);
       }
-
 
       if (t < Number.MAX_VALUE) {
         var hit = origin.add(ray.multiply(t));
@@ -105,13 +99,13 @@ export default class UI {
     }
 
     t = Number.MAX_VALUE;
-    this.state.renderer.selectedObject = null;
+    this.state.selectedObject = null;
 
     for (var i = 0; i < this.state.objects.length; i++) {
       var objectT = this.state.objects[i].intersect(origin, ray);
       if (objectT < t) {
         t = objectT;
-        this.state.renderer.selectedObject = this.state.objects[i];
+        this.state.selectedObject = this.state.objects[i];
       }
     }
 
@@ -119,8 +113,6 @@ export default class UI {
   }
 
   mouseMove(x, y) {
-    console.log("mouseMove x,y", x,y);
-
     if (this.moving) {
       var origin = this.state.eye;
       var ray = Renderer.getEyeRay(
@@ -134,7 +126,7 @@ export default class UI {
         (this.movementDistance - this.movementNormal.dot(origin)) /
         this.movementNormal.dot(ray);
       var hit = origin.add(ray.multiply(t));
-      this.state.renderer.selectedObject.temporaryTranslate(
+      this.state.selectedObject.temporaryTranslate(
         hit.subtract(this.originalHit)
       );
 
@@ -157,12 +149,8 @@ export default class UI {
         (this.movementDistance - this.movementNormal.dot(origin)) /
         this.movementNormal.dot(ray);
       var hit = origin.add(ray.multiply(t));
-      this.state.renderer.selectedObject.temporaryTranslate(
-        new Vector([0, 0, 0])
-      );
-      this.state.renderer.selectedObject.translate(
-        hit.subtract(this.originalHit)
-      );
+      this.state.selectedObject.temporaryTranslate(new Vector([0, 0, 0]));
+      this.state.selectedObject.translate(hit.subtract(this.originalHit));
       this.moving = false;
     }
   }
@@ -172,7 +160,7 @@ export default class UI {
   }
 
   selectLight() {
-    this.state.renderer.selectedObject = this.state.objects[0];
+    this.state.selectedObject = this.state.objects[0];
   }
 
   addSphere() {
@@ -195,9 +183,9 @@ export default class UI {
 
   deleteSelection() {
     for (var i = 0; i < this.state.objects.length; i++) {
-      if (this.state.renderer.selectedObject == this.state.objects[i]) {
+      if (this.state.selectedObject == this.state.objects[i]) {
         this.state.objects.splice(i, 1);
-        this.state.renderer.selectedObject = null;
+        this.state.selectedObject = null;
         this.state.renderer.setObjects(this.state.objects);
         break;
       }
