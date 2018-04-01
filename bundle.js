@@ -9295,7 +9295,6 @@
 	  }
 
 	  document.onmousedown = function (event) {
-	    console.log("mousedown", event);
 	    var mouse = canvasMousePos(event);
 	    state.oldX = mouse.x;
 	    state.oldY = mouse.y;
@@ -9961,7 +9960,7 @@
 	  value: true
 	});
 	exports.default = {
-	  resolution: "2048.0"
+	  resolution: "1024.0"
 	};
 
 /***/ }),
@@ -11756,7 +11755,6 @@
 	    key: "compileSource",
 	    value: function compileSource(source, type) {
 	      var shader = this.state.gl.createShader(type);
-	      console.log("compileSource", type, source);
 	      this.state.gl.shaderSource(shader, source);
 	      this.state.gl.compileShader(shader);
 	      if (!this.state.gl.getShaderParameter(shader, this.state.gl.COMPILE_STATUS)) {
@@ -11803,6 +11801,7 @@
 	      var gl = this.state.gl;
 
 	      if (this.state.selectedObject != null) {
+	        console.log("selected object not null", this.state.selectedObject);
 	        gl.useProgram(this.lineProgram);
 	        gl.bindTexture(this.state.gl.TEXTURE_2D, null);
 	        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -12055,7 +12054,7 @@
 	var newDiffuseRay = " ray = cosineWeightedDirection(timeSinceStart + float(bounce), normal);";
 
 	// update ray using normal according to a specular reflection
-	var newReflectiveRay = " ray = reflect(ray, normal);" + specularReflection + " specularHighlight = 2.0 * pow(specularHighlight, 20.0);";
+	var newReflectiveRay = " ray = reflect(ray, normal);" + specularReflection + " specularHighlight = 3.0 * pow(specularHighlight, 20.0);";
 
 	// update ray using normal and bounce according to a glossy reflection
 	var newGlossyRay = " ray = normalize(reflect(ray, normal)) + uniformlyRandomVector(timeSinceStart + float(bounce)) * glossiness;" + specularReflection + " specularHighlight = pow(specularHighlight, 3.0);";
@@ -12296,16 +12295,13 @@
 	  }, {
 	    key: "mouseDown",
 	    value: function mouseDown(x, y) {
-
-	      console.log("mouseDown x,y", x, y);
-
 	      var t;
 	      var origin = this.state.eye;
 	      var ray = _Renderer2.default.getEyeRay(this.state.modelviewProjection.inverse(), x / _config2.default.resolution * 2 - 1, 1 - y / _config2.default.resolution * 2, origin);
 
 	      // test the selection box first
-	      if (this.state.renderer.selectedObject != null) {
-	        var selectedObject = this.state.renderer.selectedObject;
+	      if (this.state.selectedObject != null) {
+	        var selectedObject = this.state.selectedObject;
 	        var minBounds = selectedObject.getMinCorner();
 	        var maxBounds = selectedObject.getMaxCorner();
 
@@ -12329,13 +12325,13 @@
 	      }
 
 	      t = Number.MAX_VALUE;
-	      this.state.renderer.selectedObject = null;
+	      this.state.selectedObject = null;
 
 	      for (var i = 0; i < this.state.objects.length; i++) {
 	        var objectT = this.state.objects[i].intersect(origin, ray);
 	        if (objectT < t) {
 	          t = objectT;
-	          this.state.renderer.selectedObject = this.state.objects[i];
+	          this.state.selectedObject = this.state.objects[i];
 	        }
 	      }
 
@@ -12344,15 +12340,13 @@
 	  }, {
 	    key: "mouseMove",
 	    value: function mouseMove(x, y) {
-	      console.log("mouseMove x,y", x, y);
-
 	      if (this.moving) {
 	        var origin = this.state.eye;
 	        var ray = _Renderer2.default.getEyeRay(this.state.modelviewProjection.inverse(), x / _config2.default.resolution * 2 - 1, 1 - y / _config2.default.resolution * 2, origin);
 
 	        var t = (this.movementDistance - this.movementNormal.dot(origin)) / this.movementNormal.dot(ray);
 	        var hit = origin.add(ray.multiply(t));
-	        this.state.renderer.selectedObject.temporaryTranslate(hit.subtract(this.originalHit));
+	        this.state.selectedObject.temporaryTranslate(hit.subtract(this.originalHit));
 
 	        // clear the sample buffer
 	        this.state.sampleCount = 0;
@@ -12367,8 +12361,8 @@
 
 	        var t = (this.movementDistance - this.movementNormal.dot(origin)) / this.movementNormal.dot(ray);
 	        var hit = origin.add(ray.multiply(t));
-	        this.state.renderer.selectedObject.temporaryTranslate(new _Vector2.default([0, 0, 0]));
-	        this.state.renderer.selectedObject.translate(hit.subtract(this.originalHit));
+	        this.state.selectedObject.temporaryTranslate(new _Vector2.default([0, 0, 0]));
+	        this.state.selectedObject.translate(hit.subtract(this.originalHit));
 	        this.moving = false;
 	      }
 	    }
@@ -12380,7 +12374,7 @@
 	  }, {
 	    key: "selectLight",
 	    value: function selectLight() {
-	      this.state.renderer.selectedObject = this.state.objects[0];
+	      this.state.selectedObject = this.state.objects[0];
 	    }
 	  }, {
 	    key: "addSphere",
@@ -12398,9 +12392,9 @@
 	    key: "deleteSelection",
 	    value: function deleteSelection() {
 	      for (var i = 0; i < this.state.objects.length; i++) {
-	        if (this.state.renderer.selectedObject == this.state.objects[i]) {
+	        if (this.state.selectedObject == this.state.objects[i]) {
 	          this.state.objects.splice(i, 1);
-	          this.state.renderer.selectedObject = null;
+	          this.state.selectedObject = null;
 	          this.state.renderer.setObjects(this.state.objects);
 	          break;
 	        }
