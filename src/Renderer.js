@@ -87,22 +87,12 @@ export default class Renderer {
 
     // create vertex buffer
     this.vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(
-      gl.ARRAY_BUFFER,
-      this.vertexBuffer
-    );
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array(vertices),
-      gl.STATIC_DRAW
-    );
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
     // create index buffer
     this.indexBuffer = gl.createBuffer();
-    gl.bindBuffer(
-      gl.ELEMENT_ARRAY_BUFFER,
-      this.indexBuffer
-    );
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(
       gl.ELEMENT_ARRAY_BUFFER,
       new Uint16Array(indices),
@@ -110,14 +100,8 @@ export default class Renderer {
     );
 
     // create line shader
-    this.lineProgram = this.compileShader(
-      lineVertexSource,
-      lineFragmentSource
-    );
-    this.vertexAttribute = gl.getAttribLocation(
-      this.lineProgram,
-      "vertex"
-    );
+    this.lineProgram = this.compileShader(lineVertexSource, lineFragmentSource);
+    this.vertexAttribute = gl.getAttribLocation(this.lineProgram, "vertex");
     gl.enableVertexAttribArray(this.vertexAttribute);
 
     this.state.objects = [];
@@ -162,7 +146,6 @@ export default class Renderer {
 
   compileSource(source, type) {
     var shader = this.state.gl.createShader(type);
-    console.log("compileSource", type, source);
     this.state.gl.shaderSource(shader, source);
     this.state.gl.compileShader(shader);
     if (
@@ -219,21 +202,15 @@ export default class Renderer {
   render() {
     this.state.pathTracer.render();
 
-    let gl = this.state.gl;
+    const gl = this.state.gl;
 
     if (this.state.selectedObject != null) {
+      console.log("selected object not null", this.state.selectedObject);
       gl.useProgram(this.lineProgram);
       gl.bindTexture(this.state.gl.TEXTURE_2D, null);
-      gl.bindBuffer( gl.ARRAY_BUFFER, this.vertexBuffer );
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer );
-      gl.vertexAttribPointer(
-        this.vertexAttribute,
-        3,
-        gl.FLOAT,
-        false,
-        0,
-        0
-      );
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+      gl.vertexAttribPointer(this.vertexAttribute, 3, gl.FLOAT, false, 0, 0);
       this.setUniforms(this.lineProgram, {
         cubeMin: this.state.selectedObject.getMinCorner(),
         cubeMax: this.state.selectedObject.getMaxCorner(),

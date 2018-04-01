@@ -184,7 +184,7 @@ const newDiffuseRay =
 const newReflectiveRay =
   " ray = reflect(ray, normal);" +
   specularReflection +
-  " specularHighlight = 2.0 * pow(specularHighlight, 20.0);";
+  " specularHighlight = 3.0 * pow(specularHighlight, 20.0);";
 
 // update ray using normal and bounce according to a glossy reflection
 const newGlossyRay =
